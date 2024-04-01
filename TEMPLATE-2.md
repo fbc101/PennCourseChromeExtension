@@ -43,19 +43,29 @@ _[Include any references or sources that inspired your Chrome Extension idea. Th
 _[Describe the user interface of your Chrome Extension: What will users see when they interact with your extension? How will they interact with the extension? You can include rough sketches or wireframes to illustrate your design, but name your files `<project id>-ui-1.png`, `<project id>-ui-2.png`, etc.]_
 
 _[Describe which Chrome UI/UX elements you will use in your extension, such as pop-ups, context menus, browser actions, omnibox, sidebar, etc.]_
-# Chrome UI/UX elements:
+
+### Chrome UI/UX elements:
+
 1. pop-up: Users can directly search for a course/professor in the search tab within the popup window.
-2. context menus: After highlighting a course or professor's name, the user can use the extension in the context menu to search directly without having to type
+2. context menus: After highlighting a course or professor's name, the user can use the extension in the context menu to search directly without having to type.
 
 ### API, Libraries, and Frameworks
 
-_[- List any APIs, libraries, or frameworks that you plan to use in your Chrome Extension.]_
-_[- Include links to the documentation or other relevant resources.]_
-_[- Explain very briefly how you will use these tools in your project, one sentence per item.]_
+#### API:
+
+https://penncoursereview.com/api/documentation/. We will use the two api's in this doc to search a Penn course or professor.
+
+#### Libraries:
+
+Axios: to make the query with the api url.  
+
+#### Framework:
+
+Express.js: to set up the routes for the queries
 
 ### Data Storage
 
-_[Explain what data you might need to store, and provide some overview of the models—that is, the structure of the data.]_
+We are not storing any course or professor data since we are simply fetching it from the penncoursereview api. If we decide to implement a favorite course/professor cart, then in that case we could simply store the names.
 
 ## Project Management
 
