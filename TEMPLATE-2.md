@@ -6,23 +6,23 @@ Eshaan Chichula, Franci Branda-Chen, Jake Garrison Murphy, Matt fu
 
 ## Problem Statement
 
-[Describe the problem that your Chrome Extension will solve. What are the pain points that users experience? How does your extension address these pain points?]
+Our Chrome Extension simplifies the course selection process for Penn students by addressing a specific pain point: the need to switch back and forth between Path@Penn and Penn Course Review to assess course difficulty and instructor quality. By integrating this critical information directly into the Path@Penn interface, our tool minimizes the friction involved in course research, allowing students to make informed decisions with ease.
 
 ## Target Audience
 
-[Identify the target audience for your Chrome Extension. Who will benefit from using your extension? What are the main characteristics of your target audience?]
+This extension is tailored for Penn College students who are navigating the course selection process. 
 
 ## Description
 
-[Provide a general description of your Chrome Extension idea in 2-3 sentences. Explain the main purpose and functionality of the extension.]
+Aiming to refine the course selection at Penn, our Chrome Extension introduces a user-friendly popup that condenses information from Penn Course Review, such as course difficulty levels and instructor ratings, and integrates it directly onto the Path@Penn page. This enhancement allows students to effortlessly compare and consider courses within a single browser window.
 
 ## Selling Points
 
-1. [Selling Point 1]
-2. [Selling Point 2]
-3. [Selling Point 3]
-4. [Selling Point 4]
-5. [Selling Point 5]
+1. Integrated Review Popup: Presents a succinct summary of course and instructor evaluations from Penn Course Review in a convenient popup on Path@Penn, streamlining research.
+2. Efficiency in Course Planning: Dramatically decreases the time and effort needed to review and compare course options by centralizing information.
+3. Intuitive User Experience: Offers a straightforward and easy-to-navigate interface that simplifies the decision-making process.
+4. Enhanced Decision Making: Provides immediate access to critical course information, enabling students to make informed choices without delay.
+5. Potential for Broad Application: Potential to bring in other review/descriptive sources for course/instructor information. The design principles can be adapted to simplify other review-based decision-making tasks as well.
 
 ## User Stories
 
