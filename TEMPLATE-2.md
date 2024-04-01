@@ -30,11 +30,15 @@ _[List user stories that describe the main features of your Chrome Extension. Us
 
 ## Notes
 
-_[Add any additional notes or considerations for your Chrome Extension idea. This could include potential challenges, alternative approaches, or specific features you want to highlight.]_
+- A potential challenge will be to deploy the extension for anyone to download. No one in the team has this experience, thus it will take some time to deploy. We will need the TA's assistance for this.
+- Another challenge is to create the UI for the extension. We need to know how to extract different Chrome elements from the browser, which will take some time to learn.
+- If time permits, an additional feature can be a 'shopping cart' where users can save a list of courses/professors.
 
 ## References & Inspiration
 
-_[Include any references or sources that inspired your Chrome Extension idea. This could be articles, existing products, or other resources that informed your concept. Just paste any links you found during research.]_
+- https://path.at.upenn.edu/ : This is where most of the users will use the extension. It is not necessary to open new tabs to search a class/professor.
+
+- https://github.com/CIS-3500/ideation/blob/main/round3/kaddae89.md : This team presented the idea to the class. The project has the potential to be useful to many students.
 
 ## Technical Details
 
@@ -69,13 +73,9 @@ We are not storing any course or professor data since we are simply fetching it 
 
 ### Collaboration and Task Allocation
 
-_[Select a Leader, who will make final decisions on the vision of the project; and a Manager, who will oversee the project management and ensure all team members have everything they need to contribute effectively. List the remaining team members and their roles.]_
-
-- **Leader:** [Name]
-- **Manager:** [Name]
-- **Remaining Team Members:** [Name 1, Name 2, [Name 3]]
-
-_[Provide a brief overview of what each team member will work on. How will you collaborate on this project? What tools or platforms will you use to communicate and share code?]_
+- **Leader:** Franci Branda-Chen. Makes the last decision about a feature or conflict.
+- **Manager:** Eshaan Chichula. Oversees and keeps track that the other teammates are not blocked in something.
+- **Remaining Team Members:** Jake G. M., Matt Fu. Everyone will work on the UI/Backend.
 
 ### Risks and Mitigation
 
@@ -83,9 +83,7 @@ _[Identify potential risks that could affect the development of your Chrome Exte
 
 ### Milestones and Timeline
 
-_[You have about four weeks to work on this project. During the project management, you will use an Agile methodology to manage your tasks. For now, provide your best estimate of the work done each week, from Week 1 to Week 4.]_
-
-_[- Week 1: Task 1, Task 2, Task 3
-- Week 2: Task 4, Task 5, Task 6
-- Week 3: Task 7, Task 8, Task 9
-- Week 4: Task 10, Task 11, Task 12]_
+Week 1: TASK 1 find apis, Task 2 design UI on Figma
+Week 2: Develop the UI
+week 3: Integrate the backend to the UI.
+week 4: Finishing the last details about features.
