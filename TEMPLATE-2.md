@@ -74,14 +74,19 @@ Our current user interface model can be found in: https://www.figma.com/file/5i9
 #### Libraries:
 
 - Axios: to make the query with the api url.  
+- Javascript
+- CSS
+- HTML
 
 #### Framework:
 
 - Express.js: to set up the routes for the queries.
+- React.JS
 
 ### Data Storage
 
-We are not storing any course or professor data since we are simply fetching it from the penncoursereview api. If we decide to implement a favorite course/professor cart, then in that case we could simply store the names.
+We are not storing any course or professor data since we are simply fetching it from the penncoursereview api. 
+If we decide to implement a favorite course/professor cart, then in that case we could simply store the names (with Airtable for course name/professor)
 
 ## Project Management
 
@@ -108,6 +113,6 @@ We are not storing any course or professor data since we are simply fetching it 
 ### Milestones and Timeline
 
 Week 1: TASK 1: Find APIs, Task 2: Design UI on Figma
-Week 2: Develop the UI
-Week 3: Integrate the backend to the UI
-Week 4: Finishing the last details about features
+Week 2: Task 1: Everyone must look at the chrome extension Github HW 4 (only for popup and context action), Task 2: Populate the Github with a template to work with, Task 3: Design the routes for the backend queries.
+Week 3: Task 1: Start implementing the front end.
+Week 4: Task 1: Finish up the last details about the features, Task 2: Add tests 
