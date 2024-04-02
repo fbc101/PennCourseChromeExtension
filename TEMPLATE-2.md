@@ -31,6 +31,16 @@ Aiming to refine the course selection at Penn, our Chrome Extension introduces a
 3. As a senior, I want to be able to see what courses fulfill my requirements that require the least work.
 4. As a transfer student, I want to quickly familiarise myself with different professors for core classes.
 5. As a student, I want to be able to select courses as quickly as possible with as much information as available.
+6. As a freshman, I want a simple interface to compare the difficulty of different classes.
+7. As a faculty member, I want to ensure that accurate information about my courses is available, including the course syllabus, office hours, and contact information.
+8. As a university administrator, I want the Chrome extension to integrate seamlessly with our existing course management system to ensure data accuracy and consistency.
+9. As a student, I want to see which courses my favorite professor is teaching next semester so that I am able to choose that course.
+10. As a student, I want to filter search results by semester to see which courses are available in upcoming terms.
+11. As a student, I want to access detailed descriptions of courses to understand their content and objectives.
+12. As a student, I want to see the class format (e.g., lecture, seminar, lab) for each course to understand the learning environment.
+13. As a student, I want to see the prerequisites for each course in a visually intuitive format (e.g., graph) to easily identify pathways.
+14. As a student, I want to see reviews and ratings for professors to help me choose the best instructors for my classes.
+15. As an administrator, I want to ensure data privacy and security measures are in place to protect students' personal information.
 
 ## Notes
 
