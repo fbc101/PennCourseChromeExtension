@@ -26,7 +26,11 @@ Aiming to refine the course selection at Penn, our Chrome Extension introduces a
 
 ## User Stories
 
-_[List user stories that describe the main features of your Chrome Extension. Use the following template: "As a [user role], I want to [goal] so that [benefit]." Fill in the brackets with the appropriate information. Provide 15 user stories or more.]_
+1. As a student planning my courseload, I want to be able to quickly see a course's difficulty in the Path@Penn browser.
+2. As a student who likes to use office hours, I want to be able to easily see the TA rating of a course while choosing classes.
+3. As a senior, I want to be able to see what courses fulfill my requirements that require the least work.
+4. As a transfer student, I want to quickly familiarise myself with different professors for core classes.
+5. As a student, I want to be able to select courses as quickly as possible with as much information as available.
 
 ## Notes
 
