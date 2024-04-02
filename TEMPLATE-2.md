@@ -79,11 +79,21 @@ We are not storing any course or professor data since we are simply fetching it 
 
 ### Risks and Mitigation
 
-_[Identify potential risks that could affect the development of your Chrome Extension. How will you mitigate these risks? What is your contingency plan if things don't go as expected?]_
+1. 
+- **Risk:** Some team members may neglect to complete their assigned work, which may lead to the group as a whole to fall behind and resentment between team members to grow.
+- **Mitigation:** Each member, which especial emphasis placed on the manager, should hold his teammates accountable for the work they have been assigned.
+
+2. 
+- **Risk:** Imbalances in work assignments or areas of knowledge may lead to certain members feeling as though they are taking a larger share of the work than others.
+- **Mitigation:** The leader and manager should ensure that every member is doing a roughly equal amount of work which plays to his respective strengths.
+
+3.
+- **Risk:** Our UI may be, as compared to that employed by PennCourseReview, difficult to use or navigate.
+- **Mitigation:** We should test the UI of our final product with real users to ensure that it is as intuitive as possible.
 
 ### Milestones and Timeline
 
-Week 1: TASK 1 find apis, Task 2 design UI on Figma
+Week 1: TASK 1: Find APIs, Task 2: Design UI on Figma
 Week 2: Develop the UI
-week 3: Integrate the backend to the UI.
-week 4: Finishing the last details about features.
+Week 3: Integrate the backend to the UI
+Week 4: Finishing the last details about features
