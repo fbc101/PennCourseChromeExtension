@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import axios from 'axios'
 import { MiniSnippetItem } from './components/MiniSnippet'
+import { Input, Space } from 'antd';
+import type { SearchProps } from 'antd/es/input/Search';
 import {
   BarChart,
   Bar,
@@ -32,6 +34,7 @@ function App() {
     credits: 0,
     instructors: [] as string[]
   });
+  const { Search } = Input;
 
   const rootURL = 'https://penncoursereview.com/api/base/current/courses';
 
@@ -119,7 +122,17 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Penn Course Search</h1>
+      <Search placeholder="Find Course..." onSearch = {(input) => {
+          setCourseInput(input);
+          const newinput = {
+            inputcourse : input
+          };
+          chrome.storage.local.set(newinput, () => {
+            console.log('Input course saved');
+          });
+        }
+      } enterButton />
+      <h1>Penn Course Review Extension</h1>
       <MiniSnippetItem text={courseResult.title} />
       <BarChart
         width={350}
