@@ -14,7 +14,12 @@ chrome.runtime.onInstalled.addListener(() => {
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   // Check if the clicked menu item is 'captureSnippet'
   if (info.menuItemId === 'pennCourseSearch') {
-    const selectedText = info.selectionText; // Get the selected text
+    let selectedText = info.selectionText;
+
+    // Parse HTML entities
+    const parser = new DOMParser();
+    const dom = parser.parseFromString(`<!doctype html><body>${selectedText}`, 'text/html');
+    selectedText = dom.body.textContent;
 
     // Gotta clean the input here
     // Define a regular expression to match any non-word characters (symbols)
