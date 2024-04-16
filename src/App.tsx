@@ -2,6 +2,14 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import axios from 'axios'
 import { MiniSnippetItem } from './components/MiniSnippet'
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Cell,
+  LabelList,
+} from "recharts";
 
 interface Instructor {
   name: string;
@@ -86,16 +94,65 @@ function App() {
     fetchCourse();
   }, [courseInput]);
 
+  // Format data for recharts
+  const data = [
+    { name: "Course Quality", value: courseResult.course_quality },
+    { name: "Instructor Quality", value: courseResult.instructor_quality },
+    { name: "Difficulty", value: courseResult.difficulty },
+    { name: "Work Required", value: courseResult.work_required },
+  ];
+
+  // Color function for recharts
+  const getColor = (index, value) => {
+    if (index <= 1) {
+      if (value <= 2.5) return "#d00000";
+      if (value <= 3) return "#ffd60a";
+      return "#a3b18a";
+    }
+
+    if (index >= 2) {
+      if (value <= 2.5) return "#a3b18a";
+      if (value <= 3) return "#ffd60a";
+      return "#d00000";
+    }
+  };
+
   return (
     <div className="App">
       <h1>Penn Course Review Extension</h1>
       <MiniSnippetItem text={courseResult.title} />
+      <BarChart
+        width={350}
+        height={150}
+        data={data}
+        layout="vertical"
+        margin={{ top: 5, right: 50, left: 20, bottom: 5 }}
+      >
+        <XAxis type="number" hide={true} />
+        <YAxis
+          dataKey="name"
+          type="category"
+          axisLine={false}
+          tickLine={false}
+        />
+        <Bar
+          dataKey="value"
+          fill="#8884d8"
+          barSize={20}
+          radius={[10, 10, 10, 10]}
+        >
+          <LabelList
+            dataKey="value"
+            position="right"
+            style={{ fill: "#000", fontSize: 14 }}
+          />
+          {data.map((entry, index) => (
+            <Cell key={`${index}`} fill={getColor(index, entry.value)} />
+          ))}
+        </Bar>
+      </BarChart>
       <MiniSnippetItem text={courseResult.description} />
       <MiniSnippetItem text={courseResult.prerequisites} />
-      <MiniSnippetItem text={`Course Quality: ${courseResult.course_quality}`} />
-      <MiniSnippetItem text={`Instructor Quality: ${courseResult.instructor_quality}`} />
-      <MiniSnippetItem text={`Difficulty: ${courseResult.difficulty}`} />
-      <MiniSnippetItem text={`Work Required: ${courseResult.work_required}`} />
       <MiniSnippetItem text={`Credits: ${courseResult.credits}`} />
       {courseResult.instructors.map((instructor, index) => (
         <MiniSnippetItem key={index} text={instructor} />
