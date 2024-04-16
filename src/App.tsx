@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import { Snippet, SnippetList } from './components/SnippetList';
 import axios from 'axios'
-import { SnippetItem } from './components/SnippetItem';
 import { MiniSnippetItem } from './components/MiniSnippet'
 
 interface Instructor {
