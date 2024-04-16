@@ -1,0 +1,27 @@
+{
+    "manifest_version": 3,
+    "name": "Snippet Saver",
+    "version": "1.0",
+    "description": "Save snippets of text from web pages",
+    "icons": {
+      "16": "images/favicon-16x16.png",
+      "32": "images/favicon-32x32.png",
+      "180": "images/apple-touch-icon.png",
+      "192": "images/android-chrome-192x192.png",
+      "512": "images/android-chrome-512x512.png"
+    },
+    "offline_enabled": true,
+    "permissions": ["storage", "activeTab", "contextMenus"],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "action": {
+      "default_popup": "index.html"
+    },
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["contentScript.js"]
+      }
+    ]
+  }

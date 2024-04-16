@@ -1,0 +1,1 @@
+document.addEventListener("mouseup",(function(e){const t=window.getSelection().toString().trim();t.length>0&&chrome.runtime.sendMessage({action:"saveSnippet",data:t},(e=>{console.log(e.status)}))}));
