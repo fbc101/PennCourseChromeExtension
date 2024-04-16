@@ -119,7 +119,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Penn Course Review Extension</h1>
+      <h1>Penn Course Search</h1>
       <MiniSnippetItem text={courseResult.title} />
       <BarChart
         width={350}
