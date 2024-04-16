@@ -45,9 +45,10 @@ function App() {
       const data = response.data;
 
       // Parse instructor names from sections
-      const instructors = data.sections.flatMap((section: Section) => 
+      let instructors = data.sections.flatMap((section: Section) => 
         section.instructors.map((instructor: Instructor) => instructor.name)
       );
+      instructors = instructors.filter((value, index, self) => self.indexOf(value) === index);
 
       // Check if description contains "<b>" or "<p>" and remove that and all text after it
       let description = data.description;
