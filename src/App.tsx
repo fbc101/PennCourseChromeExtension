@@ -35,6 +35,9 @@ function App() {
     instructors: [] as string[]
   });
   const { Search } = Input;
+  
+  const [isExpanded, setIsExpanded] = useState(false);
+  const maxLength = 300; // desired maximum length
 
   const rootURL = 'https://penncoursereview.com/api/base/current/courses';
   const altURL =  'https://penncoursereview.com/api/base/2024A/courses';
@@ -74,8 +77,9 @@ function App() {
         description = description.split('<p>')[0];
       }
 
+      // If course was fetched from previous semester prepend warning to description
       if (changed) {
-        description += ' This course is not available in the current semester.';
+        description = ' This course is not available in the current semester. ' + description;
       }
 
       setCourseResult({
@@ -184,7 +188,28 @@ function App() {
           ))}
         </Bar>
       </BarChart>
-      <MiniSnippetItem text={courseResult.description} />
+      <MiniSnippetItem
+        text={
+          isExpanded || courseResult.description.length <= maxLength
+            ? courseResult.description
+            : courseResult.description.slice(0, maxLength) + '...'
+        }
+      />
+      {courseResult.description.length > maxLength && (
+        <button onClick={() => setIsExpanded(!isExpanded)} 
+        style={{ 
+          marginBottom: '10px',
+          marginTop: '10px',
+          padding: '8px 16px', 
+          backgroundColor: '#3875f6', 
+          color: '#fff', 
+          border: 'none', 
+          borderRadius: '5px', 
+          cursor: 'pointer', 
+          fontSize: '14px' }}>
+          {isExpanded ? 'Show less' : 'Show more'}
+        </button>
+      )}
       <MiniSnippetItem text={courseResult.prerequisites} />
       <MiniSnippetItem text={`Credits: ${courseResult.credits}`} />
       {courseResult.instructors.map((instructor, index) => (
