@@ -24,8 +24,9 @@ interface Section {
 function App() {
   const [courseInput, setCourseInput] = useState('');
   const [courseResult, setCourseResult] = useState({
+    id: '',
     title: '',
-    description: 'No Course Selected',
+    description: 'No Course Found',
     prerequisites: '',
     course_quality: 0,
     instructor_quality: 0,
@@ -42,27 +43,13 @@ function App() {
   const rootURL = 'https://penncoursereview.com/api/base/current/courses';
   const altURL =  'https://penncoursereview.com/api/base/2024A/courses';
 
-  // asynchronously calls the penn course review API with the input course
-  const fetchCourse = async () => {
-    let changed = false;
-    try {
-      let data = null;
-      try {
-        const currResponse = await axios.get(`${rootURL}/${courseInput}`);
-        data = currResponse.data;
-      } catch (error) {
-        try {
-          const altResponse = await axios.get(`${altURL}/${courseInput}`);
-          data = altResponse.data;
-          changed = true;
-        } catch (error) {
-            console.error('Error fetching data:', error);
-            return;
-        }
-      }
-      
+  const getData = async (url: string, course: string) => {
+    const response = await axios.get(`${url}/${course}`);
+    return response.data;
+  }
 
-      // Parse instructor names from sections
+  const parseData = async (data, changed: boolean) => {
+    // Parse instructor names from sections
       let instructors = data.sections.flatMap((section: Section) => 
         section.instructors.map((instructor: Instructor) => instructor.name)
       );
@@ -83,6 +70,7 @@ function App() {
       }
 
       setCourseResult({
+        id: data.id,
         title: data.title,
         description: description,
         prerequisites: data.prerequisites,
@@ -94,8 +82,32 @@ function App() {
         instructors: instructors // Set the parsed instructor names
       });
       console.log(Response);
+  }
+
+  // asynchronously calls the penn course review API with the input course
+  const fetchCourse = async () => {
+    try {
+      let data = await getData(rootURL, courseInput);
+      parseData(data, false);
     } catch (error) {
-        console.error('Error fetching data:', error);
+      try {
+        let data = await getData(altURL, courseInput);
+        parseData(data, true);
+      } catch (error) {
+        setCourseResult({
+          id: courseInput,
+          title: '',
+          description: 'No Course Found',
+          prerequisites: '',
+          course_quality: 0,
+          instructor_quality: 0,
+          difficulty: 0,
+          work_required: 0,
+          credits: 0,
+          instructors: [] as string[]
+        });
+        console.error('Error fetching data, course was not found in previous semester:', error);
+      }
     }
   };
 
@@ -104,8 +116,9 @@ function App() {
     chrome.storage.local.get('inputcourse', (result) => {
       if (result === undefined) {
         setCourseResult({
+          id: courseInput,
           title: '',
-          description: 'No Course Selected',
+          description: 'No Course Found',
           prerequisites: '',
           course_quality: 0,
           instructor_quality: 0,
@@ -149,7 +162,6 @@ function App() {
       <Search placeholder="Find Course..." onSearch = {(input) => {
           let selectedText = input;
 
-          // Gotta clean the input here
           // Define a regular expression to match any non-word characters (symbols)
           const regex = /[^\w\s]/g;
         
@@ -172,6 +184,7 @@ function App() {
         }
       } enterButton />
       <h1>Penn Course Search</h1>
+      <MiniSnippetItem text={courseResult.id} />
       <MiniSnippetItem text={courseResult.title} />
       <BarChart
         width={350}
