@@ -37,18 +37,33 @@ function App() {
   const { Search } = Input;
 
   const rootURL = 'https://penncoursereview.com/api/base/current/courses';
+  const altURL =  'https://penncoursereview.com/api/base/2024A/courses';
 
   // asynchronously calls the penn course review API with the input course
   const fetchCourse = async () => {
+    let changed = false;
     try {
-      const response = await axios.get(`${rootURL}/${courseInput}`);
-      const data = response.data;
+      let data = null;
+      try {
+        const currResponse = await axios.get(`${rootURL}/${courseInput}`);
+        data = currResponse.data;
+      } catch (error) {
+        try {
+          const altResponse = await axios.get(`${altURL}/${courseInput}`);
+          data = altResponse.data;
+          changed = true;
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            return;
+        }
+      }
+      
 
       // Parse instructor names from sections
       let instructors = data.sections.flatMap((section: Section) => 
         section.instructors.map((instructor: Instructor) => instructor.name)
       );
-      instructors = instructors.filter((value, index, self) => self.indexOf(value) === index);
+      instructors = instructors.filter((value: any, index: any, self: string | any[]) => self.indexOf(value) === index);
 
       // Check if description contains "<b>" or "<p>" and remove that and all text after it
       let description = data.description;
@@ -57,6 +72,10 @@ function App() {
       }
       if (description.includes('<p>')) {
         description = description.split('<p>')[0];
+      }
+
+      if (changed) {
+        description += ' This course is not available in the current semester.';
       }
 
       setCourseResult({
@@ -70,7 +89,7 @@ function App() {
         credits: data.credits,
         instructors: instructors // Set the parsed instructor names
       });
-      console.log(response);
+      console.log(Response);
     } catch (error) {
         console.error('Error fetching data:', error);
     }
@@ -107,7 +126,7 @@ function App() {
   ];
 
   // Color function for recharts
-  const getColor = (index, value) => {
+  const getColor = (index: number, value: number) => {
     if (index <= 1) {
       if (value <= 2.5) return "#d00000";
       if (value <= 3) return "#ffd60a";
@@ -133,7 +152,7 @@ function App() {
           });
         }
       } enterButton />
-      <h1>Penn Course Review Extension</h1>
+      <h1>Penn Course Search</h1>
       <MiniSnippetItem text={courseResult.title} />
       <BarChart
         width={350}
