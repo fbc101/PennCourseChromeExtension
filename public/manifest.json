@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "Snippet Saver",
-    "version": "1.0",
-    "description": "Save snippets of text from web pages",
+    "name": "Penn Course Search",
+    "version": "0.9",
+    "description": "Quickly access Penn Course Review information about courses at Penn!",
     "icons": {
       "16": "images/favicon-16x16.png",
       "32": "images/favicon-32x32.png",
