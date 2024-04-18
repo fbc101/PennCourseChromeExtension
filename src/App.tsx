@@ -136,10 +136,10 @@ function App() {
 
   // Format data for recharts
   const data = [
-    { name: "Course Quality", value: courseResult.course_quality.toFixed(1) },
-    { name: "Instructor Quality", value: courseResult.instructor_quality.toFixed(1) },
-    { name: "Difficulty", value: courseResult.difficulty.toFixed(1) },
-    { name: "Work Required", value: courseResult.work_required.toFixed(1) },
+    { name: "Course Quality", value: parseFloat(courseResult.course_quality.toFixed(1)) },
+    { name: "Instructor Quality", value: parseFloat(courseResult.instructor_quality.toFixed(1)) },
+    { name: "Difficulty", value: parseFloat(courseResult.difficulty.toFixed(1)) },
+    { name: "Work Required", value: parseFloat(courseResult.work_required.toFixed(1)) },
   ];
 
   // Color function for recharts
