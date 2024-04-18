@@ -171,7 +171,7 @@ function App() {
 
   return (
     <div className="App">
-      <img src={pennCourseSearchImage} style={{ width: '200px', height: '75px' }} />
+      <img src={pennCourseSearchImage} style={{ width: '200px', height: '50px' }} />
       <Search placeholder="Find Course..." onSearch = {(input) => {
           let selectedText = input;
 
