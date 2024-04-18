@@ -193,7 +193,7 @@ function App() {
         layout="vertical"
         margin={{ top: 5, right: 50, left: 20, bottom: 5 }}
       >
-        <XAxis type="number" hide={true} />
+        <XAxis type="number" hide={true} domain={[0, 4]}/>
         <YAxis
           dataKey="name"
           type="category"
@@ -205,6 +205,7 @@ function App() {
           fill="#8884d8"
           barSize={20}
           radius={[10, 10, 10, 10]}
+          background={{ fill: '#eee', radius: 10 }}
         >
           <LabelList
             dataKey="value"
