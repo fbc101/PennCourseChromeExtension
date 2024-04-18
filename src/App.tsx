@@ -144,18 +144,28 @@ function App() {
 
   // Color function for recharts
   const getColor = (index: number, value: number) => {
-    if (index <= 1) {
-      if (value <= 2.5) return "#d00000";
-      if (value <= 3) return "#ffd60a";
-      return "#a3b18a";
-    }
+    let red, green;
+    const maxColorValue = 240; // Lower this value to make the colors darker
 
-    if (index >= 2) {
-      if (value <= 2.5) return "#a3b18a";
-      if (value <= 3) return "#ffd60a";
-      return "#d00000";
+    if (index <= 1) {
+      if (value <= 2) {
+        red = maxColorValue;
+        green = Math.round(maxColorValue * value / 2);
+      } else {
+        red = Math.round(maxColorValue * (4 - value) / 2);
+        green = maxColorValue;
+      }
+    } else {
+      if (value <= 2) {
+        green = maxColorValue;
+        red = Math.round(maxColorValue * value / 2);
+      } else {
+        green = Math.round(maxColorValue * (4 - value) / 2);
+        red = maxColorValue;
+      }
     }
-  };
+    return `rgb(${red}, ${green}, 0)`;
+  }
 
   return (
     <div className="App">
