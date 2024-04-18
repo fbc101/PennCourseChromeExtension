@@ -74,10 +74,10 @@ function App() {
         title: data.title,
         description: description,
         prerequisites: data.prerequisites,
-        course_quality: data.course_quality,
-        instructor_quality: data.instructor_quality,
-        difficulty: data.difficulty,
-        work_required: data.work_required,
+        course_quality: data.course_quality !== null ? data.course_quality : 0,
+        instructor_quality: data.instructor_quality !== null ? data.instructor_quality : 0,
+        difficulty: data.difficulty !== null ? data.difficulty : 0,
+        work_required: data.work_required !== null ? data.work_required : 0,
         credits: data.credits,
         instructors: instructors // Set the parsed instructor names
       });
