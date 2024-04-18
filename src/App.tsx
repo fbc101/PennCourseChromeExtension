@@ -4,6 +4,8 @@ import axios from 'axios'
 import { MiniSnippetItem } from './components/MiniSnippet'
 import { Input, Space } from 'antd';
 import type { SearchProps } from 'antd/es/input/Search';
+import pennCourseSearchImage from '/public/images/pennCourseSearch.png';
+
 import {
   BarChart,
   Bar,
@@ -169,6 +171,7 @@ function App() {
 
   return (
     <div className="App">
+      <img src={pennCourseSearchImage} style={{ width: '200px', height: '75px' }} />
       <Search placeholder="Find Course..." onSearch = {(input) => {
           let selectedText = input;
 
@@ -193,7 +196,6 @@ function App() {
           });
         }
       } enterButton />
-      <h1>Penn Course Search</h1>
       <MiniSnippetItem text={courseResult.id} />
       <MiniSnippetItem text={courseResult.title} />
       <BarChart
