@@ -22,7 +22,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
   
     // Replace all occurrences of symbols with a space
     const noSymbolStringTrimmed = selectedText.replace(regex, ' ').trim().toLocaleUpperCase();
-    const codeAndNumber = noSymbolStringTrimmed.split(/ /); // splits by space 
+    const codeAndNumber = noSymbolStringTrimmed.split(/\s|&nbsp;/); // splits by space and &nbsp; 
     
     // Check if the number part has 3 digits, and if so, append a '0'
     if (codeAndNumber[1].length === 3) {
