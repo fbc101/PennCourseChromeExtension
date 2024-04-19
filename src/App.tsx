@@ -171,7 +171,7 @@ function App() {
 
   return (
     <div className="App">
-      <img src={pennCourseSearchImage} style={{ width: '200px', height: '50px' }} />
+      <img src={pennCourseSearchImage} style={{ width: '287px', height: '50px', marginBottom: '15px' }} />
       <Search placeholder="Find Course..." onSearch = {(input) => {
           let selectedText = input;
 
@@ -196,7 +196,8 @@ function App() {
           });
         }
       } enterButton />
-      <MiniSnippetItem text={courseResult.id} />
+      <div style={{ height: '15px' }} /> 
+      <MiniSnippetItem text={courseResult.id}/>
       <MiniSnippetItem text={courseResult.title} />
       <BarChart
         width={350}
