@@ -220,7 +220,7 @@ function App() {
           <LabelList
             dataKey="value"
             position="right"
-            style={{ fill: "#000", fontSize: 14 }}
+            style={{ fill: "#000", fontSize: 14, fontWeight: "bold"}}
           />
           {data.map((entry, index) => (
             <Cell key={`${index}`} fill={getColor(index, entry.value)} />
@@ -251,6 +251,7 @@ function App() {
       )}
       <MiniSnippetItem text={courseResult.prerequisites} />
       <MiniSnippetItem text={`Credits: ${courseResult.credits}`} />
+      <MiniSnippetItem text={"Instructors: "} />
       {courseResult.instructors.map((instructor, index) => (
         <MiniSnippetItem key={index} text={instructor} />
       ))}
