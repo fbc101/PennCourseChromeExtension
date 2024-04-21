@@ -29,3 +29,4 @@ node_modules/@babel/runtime/helpers/applyDecs2203R.js
 node_modules/@babel/runtime/helpers/applyDecs2203.js
 node_modules/@babel/runtime/helpers/applyDecs.js
 node_modules/.package-lock.json
+*.bundle.js
