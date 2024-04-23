@@ -1,25 +1,48 @@
+
 .App {
-    color: black;
-    text-align: center;
-  }
-  
-  .container {
-    width: 400px;
-    padding: 1rem;
-    background-color: white;
-  }
-  
-  .snippet-list {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .snippet-item {
-    margin-bottom: 1rem;
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-  }
-  
-  .snippet-item button {
-    margin-left: 0.5rem;
-  }
+  color: black;
+  text-align: center;
+}
+
+.container {
+  width: 400px;
+  padding: 1rem;
+  background-color: white;
+}
+
+.snippet-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.snippet-item {
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  text-align: left;
+}
+
+.title-one {
+  font-size: 17px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.title-two {
+  font-size: 17px;
+  text-align: center;
+}
+
+.mini-snippet {
+  font-size: 12px;
+  text-align: center;
+}
+
+.snippet-text {
+  font-size: 12px;
+  text-align: left;
+}
+
+.snippet-item button {
+  margin-left: 0.5rem;
+}

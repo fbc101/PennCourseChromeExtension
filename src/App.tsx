@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import axios from 'axios'
 import { MiniSnippetItem } from './components/MiniSnippet'
+import { MiniSnippetTitle1 } from './components/MiniSnippet'
+import { MiniSnippetTitle2 } from './components/MiniSnippet'
+import { MiniSnippetText } from './components/MiniSnippet'
 import { Input, Space } from 'antd';
 import type { SearchProps } from 'antd/es/input/Search';
 import pennCourseSearchImage from '/public/images/pennCourseSearch.png';
@@ -197,8 +200,8 @@ function App() {
         }
       } enterButton />
       <div style={{ height: '15px' }} /> 
-      <MiniSnippetItem text={courseResult.id}/>
-      <MiniSnippetItem text={courseResult.title} />
+      <MiniSnippetTitle1 text={courseResult.id}/>
+      <MiniSnippetTitle2 text={courseResult.title} />
       <BarChart
         width={350}
         height={150}
@@ -230,7 +233,7 @@ function App() {
           ))}
         </Bar>
       </BarChart>
-      <MiniSnippetItem
+      <MiniSnippetText
         text={
           isExpanded || courseResult.description.length <= maxLength
             ? courseResult.description
