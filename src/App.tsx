@@ -200,8 +200,19 @@ function App() {
         }
       } enterButton />
       <div style={{ height: '15px' }} /> 
-      <MiniSnippetTitle1 text={courseResult.id}/>
-      <MiniSnippetTitle2 text={courseResult.title} />
+      <div style={{ marginBottom: '10px' }}>
+        <span className='title-one'> {courseResult.id}: </span>
+        <span className='title-two' > {courseResult.title} </span>
+      </div>
+      <span style={{color: 'grey'}}>
+        {courseResult.prerequisites}
+        <span style={{ fontWeight: 'bold' }}> {`  Credits:  `} </span>
+        {courseResult.credits}
+        <span style={{ fontWeight: 'bold' }}> {`,  Instructors: `} </span>
+        {courseResult.instructors.map((instructor, index) => (
+          <span key={index}> {instructor} </span> 
+        ))}
+      </span>
       <BarChart
         width={350}
         height={150}
@@ -255,12 +266,6 @@ function App() {
           {isExpanded ? 'Show less' : 'Show more'}
         </button>
       )}
-      <MiniSnippetItem text={courseResult.prerequisites} />
-      <MiniSnippetItem text={`Credits: ${courseResult.credits}`} />
-      <MiniSnippetItem text={"Instructors: "} />
-      {courseResult.instructors.map((instructor, index) => (
-        <MiniSnippetItem key={index} text={instructor} />
-      ))}
     </div>
   );
 }
