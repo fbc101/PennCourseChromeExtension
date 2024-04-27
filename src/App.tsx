@@ -40,6 +40,24 @@ function App() {
     credits: 0,
     instructors: [] as string[]
   });
+
+  // Get the initial search history from storage
+  const [searchHistory, setSearchHistory] = useState<string[]>([]);
+  useEffect(() => {
+    chrome.storage.local.get(['searchHistory'], (result) => {
+      if (result.searchHistory) {
+        setSearchHistory(result.searchHistory);
+      }
+    });
+  }, []);
+
+  const clearSearchHistory = () => {
+    chrome.storage.local.remove('searchHistory', () => {
+      console.log('Search history cleared');
+    });
+    setSearchHistory([]);
+  };
+
   const { Search } = Input;
   
   const [isExpanded, setIsExpanded] = useState(false);
@@ -94,10 +112,22 @@ function App() {
     try {
       let data = await getData(rootURL, courseInput);
       parseData(data, false);
+
+      // Update the search history
+      // const newSearchHistory = [courseInput, ...searchHistory];
+      const newSearchHistory = [courseInput, ...searchHistory.filter(item => item !== courseInput)];
+      setSearchHistory(newSearchHistory);
+      chrome.storage.local.set({ searchHistory: newSearchHistory });
     } catch (error) {
       try {
         let data = await getData(altURL, courseInput);
         parseData(data, true);
+
+      // Update the search history
+      // const newSearchHistory = [courseInput, ...searchHistory];
+      const newSearchHistory = [courseInput, ...searchHistory.filter(item => item !== courseInput)];
+      setSearchHistory(newSearchHistory);
+      chrome.storage.local.set({ searchHistory: newSearchHistory });
       } catch (error) {
         setCourseResult({
           id: courseInput,
@@ -204,6 +234,14 @@ function App() {
         <span className='title-one'> {courseResult.id}: </span>
         <span className='title-two' > {courseResult.title} </span>
       </div>
+        <div>
+        <h2>Search History:</h2>
+        <ul>
+          {searchHistory.map((item, index) => (
+            <li key={index}>{item}</li>
+          ))}
+        </ul>
+      </div>
       <span style={{color: 'grey'}}>
         {courseResult.prerequisites}
         <span style={{ fontWeight: 'bold' }}> {`  Credits:  `} </span>
@@ -266,6 +304,21 @@ function App() {
           {isExpanded ? 'Show less' : 'Show more'}
         </button>
       )}
+      <button onClick={clearSearchHistory} 
+        style={{ 
+          marginBottom: '10px',
+          marginTop: '10px',
+          marginLeft: '10px',
+          padding: '8px 16px', 
+          backgroundColor: '#3875f6', 
+          color: '#fff', 
+          border: 'none', 
+          borderRadius: '5px', 
+          cursor: 'pointer', 
+          fontSize: '14px' 
+        }}>
+        Clear Search History
+      </button>
     </div>
   );
 }
