@@ -41,3 +41,38 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     });
   }
 });
+
+chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+  const safe = true;
+  const selectedText = message.highlightedText;
+
+  const regex = /[^\w\s]/g;
+  const regexNumber = /^\d{3,4}$/; // number has only 3 or 4 digits
+
+  // Replace all occurrences of symbols with a space
+  const noSymbolStringTrimmed = selectedText.replace(regex, ' ').trim().toLocaleUpperCase();
+  const codeAndNumber = noSymbolStringTrimmed.split(/\s|&nbsp;/); // splits by space and &nbsp; 
+  
+  // if the code has greater than 4 letters OR the numbers are not between 3 and 4 digits (also checks if it even is a number), 
+  // then it is not safe to be searched
+  if (codeAndNumber[0].length > 4 || !regexNumber.test(codeAndNumber[1])) {
+    safe = false;
+  }
+
+  // Check if the number part has 3 digits, and if so, append a '0'
+  if (codeAndNumber[1].length === 3) {
+    codeAndNumber[1] += '0';
+  } 
+  
+  const cleanedInputCourse = codeAndNumber[0] + '-' + codeAndNumber[1]; // Code-Number e.g CIS-1200
+
+  const newinput = {
+    inputcourse : cleanedInputCourse
+  };
+
+  if (safe) {
+    chrome.storage.local.set(newinput, () => {
+      console.log('Input course saved');
+    });
+  }
+});
