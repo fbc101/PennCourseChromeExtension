@@ -23,5 +23,5 @@
   },
   "include": [
     "src"
-, "public/background.js", "public/contentScript.js"  ]
+, "public/background.js", "public/content.js"  ]
 }
