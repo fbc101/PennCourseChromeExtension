@@ -208,7 +208,8 @@ function App() {
         {courseResult.prerequisites}
         <span style={{ fontWeight: 'bold' }}> {`  Credits:  `} </span>
         {courseResult.credits}
-        <span style={{ fontWeight: 'bold' }}> {`,  Instructors: `} </span>
+        &nbsp;&nbsp;&nbsp;
+        <span style={{ fontWeight: 'bold' }}> {`  Instructors: `} </span>
         {courseResult.instructors.map((instructor, index) => (
           <span key={index}> {instructor} </span> 
         ))}
