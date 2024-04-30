@@ -5,7 +5,8 @@ import { MiniSnippetItem } from './components/MiniSnippet'
 import { MiniSnippetTitle1 } from './components/MiniSnippet'
 import { MiniSnippetTitle2 } from './components/MiniSnippet'
 import { MiniSnippetText } from './components/MiniSnippet'
-import { Input, Space } from 'antd';
+import { AutoComplete, Input, Space } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
 import type { SearchProps } from 'antd/es/input/Search';
 import pennCourseSearchImage from '/public/images/pennCourseSearch.png';
 
@@ -172,33 +173,68 @@ function App() {
     return `rgb(${red}, ${green}, 0)`;
   }
 
+  const findCourse = async (input: string) => {
+    let selectedText = input;
+
+    // Define a regular expression to match any non-word characters (symbols)
+    const regex = /[^\w\s]/g;
+  
+    // Replace all occurrences of symbols with a space
+    const noSymbolStringTrimmed = selectedText.replace(regex, ' ').trim().toLocaleUpperCase();
+    const codeAndNumber = noSymbolStringTrimmed.split(/ /); // splits by space
+    // Check if the number part has 3 digits, and if so, append a '0'
+    if (codeAndNumber[1].length === 3) {
+      codeAndNumber[1] += '0';
+    } 
+    
+    const cleanedInputCourse = codeAndNumber[0] + '-' + codeAndNumber[1]; // Code-Number e.g CIS-1200
+    setCourseInput(cleanedInputCourse);
+    const newinput = {
+      inputcourse : cleanedInputCourse
+    };
+  chrome.storage.local.set(newinput, () => {
+    console.log('Input course saved');
+  });
+}
+
+  const renderItem = (number: string, name: string) => ({
+    value: number,
+    label: (
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}
+      >
+        {number}
+        <span>
+          <UserOutlined /> {name}
+        </span>
+      </div>
+    ),
+  });
+
+  const history = [
+    renderItem('CIS-1210', 'Arvind Bhusnurmath'),
+    renderItem('CIS-2400', 'Erik Waingarten'),
+    renderItem('CIS-3200', 'Travis Q. Mcgaha')
+  ];
+
   return (
     <div className="App">
       <img src={pennCourseSearchImage} style={{ width: '287px', height: '50px', marginBottom: '15px' }} />
-      <Search placeholder="Find Course..." onSearch = {(input) => {
-          let selectedText = input;
-
-          // Define a regular expression to match any non-word characters (symbols)
-          const regex = /[^\w\s]/g;
-        
-          // Replace all occurrences of symbols with a space
-          const noSymbolStringTrimmed = selectedText.replace(regex, ' ').trim().toLocaleUpperCase();
-          const codeAndNumber = noSymbolStringTrimmed.split(/ /); // splits by space
-          // Check if the number part has 3 digits, and if so, append a '0'
-          if (codeAndNumber[1].length === 3) {
-            codeAndNumber[1] += '0';
-          } 
-          
-          const cleanedInputCourse = codeAndNumber[0] + '-' + codeAndNumber[1]; // Code-Number e.g CIS-1200
-          setCourseInput(cleanedInputCourse);
-          const newinput = {
-            inputcourse : cleanedInputCourse
-          };
-          chrome.storage.local.set(newinput, () => {
-            console.log('Input course saved');
-          });
-        }
-      } enterButton />
+      <AutoComplete 
+        popupClassName="certain-category-search-dropdown"
+        popupMatchSelectWidth={400}
+        style={{ width: 400 }}
+        options={history}
+        size="large"
+        onSelect={(input) => {findCourse(input)}}> 
+        <Input.Search size="large" 
+          placeholder="Find Course..." 
+          onSearch = {(input) => {findCourse(input)}
+      }></Input.Search>
+      </AutoComplete>
       <div style={{ height: '15px' }} /> 
       <div style={{ marginBottom: '10px' }}>
         <span className='title-one'> {courseResult.id}: </span>
