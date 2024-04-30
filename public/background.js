@@ -47,7 +47,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
   const selectedText = message.highlightedText;
 
   const regex = /[^\w\s]/g;
-  const entireCodeRegex = /[a-zA-z]{3,4}([-\s]|(&nbsp;))[0-9]{3,4}/;
+  const entireCodeRegex = /[a-zA-z]{2,4}([-\s]|(&nbsp;))[0-9]{3,4}/;
 
   const match = entireCodeRegex.exec(selectedText);
   let codeAndNumber; 
