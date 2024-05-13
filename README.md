@@ -34,16 +34,14 @@ The extension is very easy to use! We have two main features on how to search fo
 ### Quick Highlight Search
 This method returns the first valid course found in the highlighted text.
 
-1. Highlight any text, of any size that contains the course of interest
-![pcs7](https://github.com/fbc101/PennCourseChromeExtension/assets/157915007/506d5e71-1cfe-46b3-8503-4debc7ac5c93)
+![DemoQuickFetch](https://github.com/fbc101/PennCourseChromeExtension/assets/157915007/6da5e2da-2a58-4f60-b61a-e23228f950e3)
 
-2. Open the pop-up!
-![pcs8](https://github.com/fbc101/PennCourseChromeExtension/assets/157915007/a8c392eb-59ae-4b96-9209-b89057a208cd)
 
 ### Search Tab
 Type the course you are interested in
 
-![pcs9](https://github.com/fbc101/PennCourseChromeExtension/assets/157915007/88f29f9d-727d-48d3-956f-4d43963836de)
+![searchtab](https://github.com/fbc101/PennCourseChromeExtension/assets/157915007/bf58c519-0f86-455b-a317-15a5a161299b)
+
 
 
 
