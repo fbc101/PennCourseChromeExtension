@@ -211,7 +211,7 @@ function App() {
         &nbsp;&nbsp;&nbsp;
         <span style={{ fontWeight: 'bold' }}> {`  Instructors: `} </span>
         {courseResult.instructors.map((instructor, index) => (
-          <span key={index}> {instructor} </span> 
+          <span key={index}> {instructor}{index !== courseResult.instructors.length - 1 ? ',' : ''} </span> 
         ))}
       </span>
       <BarChart
