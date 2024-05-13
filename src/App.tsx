@@ -239,7 +239,7 @@ const findCourse = async (input: string) => {
       >
         {number}
         <span>
-          <UserOutlined /> {name}
+          {/* <UserOutlined /> {name} */}
         </span>
       </div>
     ),
@@ -248,7 +248,7 @@ const findCourse = async (input: string) => {
   const history = () => {
     const classes = [];
     for (let i = 0; i < searchHistory.length; i++) {
-      classes[i] = renderItem(searchHistory[i], 'Arvind Bhusnurmath');
+      classes[i] = renderItem(searchHistory[i], '');
     }
     return classes;
   };
