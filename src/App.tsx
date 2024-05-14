@@ -359,6 +359,11 @@ const findCourse = async (input: string) => {
         }}>
         Clear Search History
       </button>
+      <div style={{ textAlign: 'center', marginTop: '10px' }}>
+        <a href="https://forms.gle/qDwm7njL9JDvoHyN8" target="_blank" rel="noopener noreferrer" style={{ fontSize: '14px' }}>
+          Click here to give us feedback!
+        </a>
+      </div>
     </div>
   );
 }
