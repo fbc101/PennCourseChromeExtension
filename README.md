@@ -4,11 +4,7 @@ This extension aims to facilitate the query for a specific Penn course without h
 
 ## Getting Started
 
-Copy the SSH link in the green button `<> Code`. Then, clone the repository with `git clone <SSH Link Copied>`
-
-Open a terminal and go to the root directory `PennCourseChromeExtension`. Proceed to run these lines:
-1. `npm install`
-2. `npm run build` (this will create a `dist` folder)
+Download the latest release from [Releases](https://github.com/fbc101/PennCourseChromeExtension/releases), and unzip the folder.
 
 Now, open a google chrome tab and follow these steps:
 
@@ -21,8 +17,7 @@ Now, open a google chrome tab and follow these steps:
 3. Enable Developer Mode on the top right and click the `load unpacked` button
 ![pcs3](https://github.com/fbc101/PennCourseChromeExtension/assets/157915007/06f45074-c918-4cb5-bc27-126f2c04f9f3)
 
-4. Select the `dist` folder created from the previous part
-![pcs4](https://github.com/fbc101/PennCourseChromeExtension/assets/157915007/7d778122-a21d-4ba5-8d73-516dab497c18)
+4. Select the unzipped folder created
 
 5. Pin the extension for more convenience!
 ![pcs6](https://github.com/fbc101/PennCourseChromeExtension/assets/157915007/766fc32c-0ba6-4972-9978-a60e5040977b)
