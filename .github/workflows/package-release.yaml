@@ -1,0 +1,74 @@
+name: 📦 Create Release and Zip Folder
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    runs-on: ubuntu-22.04
+    permissions:
+      actions: write
+      checks: write
+      contents: write
+      deployments: write
+      pull-requests: write
+      repository-projects: write
+    steps:
+      - name: 🛎️ Checkout code
+        uses: actions/checkout@v4.1.1
+        with:
+          submodules: true # Fetch all submodules if any (true OR recursive)
+          fetch-depth: 0 # Fetch all history for .GitInfo and .Lastmod
+      
+      - name: 🪪 Set repository name variable
+        run: echo "REPO_NAME=$(echo $GITHUB_REPOSITORY | cut -d '/' -f 2)" >> $GITHUB_ENV
+      
+      - name: 🔧 Setup Node.js to build extension
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.12.0
+
+      - name: 📦 Install dependencies
+        working-directory: .
+        run: |
+          npm install
+      
+      - name: 🏗️ Build extension
+        working-directory: .
+        run: |
+          rm -Rf dist
+          npm run build
+          mv dist "${{ env.REPO_NAME }}"
+
+      - name: 📅 Set date and SHA variables
+        id: vars
+        run: |
+          echo "DATE=$(date +'%Y%m%d-%H%M')" >> $GITHUB_ENV
+          echo "SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          echo "TAG_NAME=v$(date +'%Y%m%d-%H%M')" >> $GITHUB_ENV
+          echo "RELEASE_NAME=${{ env.REPO_NAME }}-$(date +'%Y%m%d-%H%M').zip" >> $GITHUB_ENV
+
+      - name: 🗜️ Zip the extension folder
+        run: zip -r "${{ env.RELEASE_NAME }}" "${{ env.REPO_NAME }}"
+
+      - name: 🏷️ Create and push tag
+        run: |
+          git tag $TAG_NAME
+          git push origin $TAG_NAME
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🚀 Create Release & Upload Asset
+        uses: softprops/action-gh-release@v1
+        #if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: "${{ env.RELEASE_NAME }}"
+          name: "Release v${{ env.DATE }}"
+          body: "Release for commit ${{ env.SHA }} on date ${{ env.DATE }}"
+          tag_name: "${{ env.TAG_NAME }}"
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
