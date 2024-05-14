@@ -18,7 +18,7 @@ Now, open a google chrome tab and follow these steps:
 2. Click manage extension
 ![pcs2](https://github.com/fbc101/PennCourseChromeExtension/assets/157915007/f4f6883b-ffd0-45d5-9f35-c689b084dabf)
 
-3. Click the `load unpacked` button
+3. Enable Developer Mode on the top right and click the `load unpacked` button
 ![pcs3](https://github.com/fbc101/PennCourseChromeExtension/assets/157915007/06f45074-c918-4cb5-bc27-126f2c04f9f3)
 
 4. Select the `dist` folder created from the previous part
