@@ -38,3 +38,4 @@ dist/bundle.js.LICENSE.txt
 dist/index.html
 dist/manifest.json
 public/.DS_Store
+.DS_Store
