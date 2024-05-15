@@ -41,7 +41,7 @@ Type the course ID you are interested in!
 ![searchtab](https://github.com/fbc101/PennCourseChromeExtension/assets/157915007/bf58c519-0f86-455b-a317-15a5a161299b)
 
 ## Report Issues
-You can add issues on the [Issues Section](https://github.com/fbc101/PennCourseChromeExtension/issues) for any bugs, suggestions/improvements
+You can add issues on the [Issues Section](https://github.com/fbc101/PennCourseChromeExtension/issues) for any bugs, suggestions/improvements. You can also fill out this [Google Form](https://docs.google.com/forms/d/e/1FAIpQLSdf_Y4I294y5uPuGqQkdoYSwDDUeyvBBqTGhrBWY2N_L8ZKpw/viewform) for any feedback!
 
 ## Credits
 
