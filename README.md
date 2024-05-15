@@ -1,6 +1,9 @@
 # Penn Course Search Extension
+![BiggerLoggoNoBackground](https://github.com/fbc101/PennCourseChromeExtension/assets/157915007/49f142f3-3594-4b58-ae69-28634d44bb38)
+This extension aims to facilitate the search for a specific Penn course without the need to open additional tabs. To learn more, please visit our [landing page](https://mattfu25.github.io/penn-course-search-landing-page/)!
 
-This extension aims to facilitate the query for a specific Penn course without having to open additional tabs.
+## Authors
+Franci Branda-Chen, Eshaan Chichula, Matt Fu, Jake G. Murphy
 
 ## Getting Started
 
@@ -24,22 +27,51 @@ Now, open a google chrome tab and follow these steps:
 
 ## How To Use The Extension
 
-The extension is very easy to use! We have two main features on how to search for a course: 1) Quick Highlight Search, 2) Search Tab
+The extension is very easy to use! We have two main features on how to search for a course: 1) Quick Highlight Search, 2) Search Tab. Check out our [demo](https://www.youtube.com/watch?v=LDgKrJiaL38) in Youtube to learn more!
 
 ### Quick Highlight Search
-This method returns the first valid course found in the highlighted text.
+This feature returns the first valid course found in the highlighted text. Simply highlight the text containing the course ID of interest, and open the pop-up to see its information
 
 ![DemoQuickFetch](https://github.com/fbc101/PennCourseChromeExtension/assets/157915007/6da5e2da-2a58-4f60-b61a-e23228f950e3)
 
 
 ### Search Tab
-Type the course you are interested in
+Type the course ID you are interested in!
 
 ![searchtab](https://github.com/fbc101/PennCourseChromeExtension/assets/157915007/bf58c519-0f86-455b-a317-15a5a161299b)
 
+## Report Issues
+You can add issues on the [Issues Section](https://github.com/fbc101/PennCourseChromeExtension/issues) for any bugs, suggestions/improvements
 
+## Credits
 
+- https://github.com/CIS-3500/ideation/blob/main/round3/kaddae89.md : This team presented the idea to the class
+- https://github.com/jlumbroso/chrome-extension-text-collector : Provided the foundation for our extension's pop-up and background logic
+- https://github.com/zealotjin/quicklygpt-extension : Provided the foundation for quick highlight search
 
+## License 
+
+MIT License
+
+Copyright (c) 2024 Franci Branda-Chen, Eshaan Chichula, Matt Fu, Jake G. Murphy
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 
 
