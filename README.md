@@ -1,6 +1,8 @@
 # Penn Course Search Extension
 ![BiggerLoggoNoBackground](https://github.com/fbc101/PennCourseChromeExtension/assets/157915007/49f142f3-3594-4b58-ae69-28634d44bb38)
-This extension aims to facilitate the search for a specific Penn course without the need to open additional tabs. To learn more, please visit our [landing page](https://mattfu25.github.io/penn-course-search-landing-page/)!
+Penn Course Search is a Chrome extension that allows students to search for courses in the Penn catalog from the comfort of their Chrome toolbar. Our Chrome extension eliminates the need for students to open extra tabs to gather information about a course. Everything they need is conveniently accessible through the pop-up interface.
+
+To learn more, please visit our [landing page](https://mattfu25.github.io/penn-course-search-landing-page/)!
 
 ## Authors
 Franci Branda-Chen, Eshaan Chichula, Matt Fu, Jake G. Murphy
