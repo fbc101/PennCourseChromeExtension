@@ -1,7 +1,7 @@
 {
-    "manifest_version": 3,
+    "manifest_version": 4,
     "name": "Penn Course Search",
-    "version": "0.9",
+    "version": "1.0",
     "description": "Quickly access Penn Course Review information about courses at Penn!",
     "icons": {
       "16": "images/favicon-16x16.png",
