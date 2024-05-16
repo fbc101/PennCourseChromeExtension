@@ -21,12 +21,19 @@ import {
 import { render } from 'react-dom';
 
 interface Instructor {
-  name: string;
+  id: number,
+  name: string
 }
 
 interface Section {
   instructors: Instructor[];
+  course_quality: number,
+  instructor_quality: number,
+  difficulty: number,
+  work_required: number
 }
+
+
 
 function App() {
   const [courseInput, setCourseInput] = useState('');
@@ -40,11 +47,28 @@ function App() {
     difficulty: 0,
     work_required: 0,
     credits: 0,
-    instructors: [] as string[]
+    instructor: ''
   });
+
+  const [courseResultProfessors, setCourseResultProfessors] = useState([{
+    id: '',
+    title: '',
+    description: 'No Course Found',
+    prerequisites: '',
+    course_quality: 0,
+    instructor_quality: 0,
+    difficulty: 0,
+    work_required: 0,
+    credits: 0,
+    instructor: ''
+  }]);
+
+  // State to manage the selected option
+  const [selectedOption, setSelectedOption] = useState<string>('');
 
   // Get the initial search history from storage
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
+
   useEffect(() => {
     chrome.storage.local.get(['searchHistory'], (result) => {
       if (result.searchHistory) {
@@ -60,13 +84,11 @@ function App() {
     setSearchHistory([]);
   };
 
-  const { Search } = Input;
-  
   const [isExpanded, setIsExpanded] = useState(false);
   const maxLength = 300; // desired maximum length
 
   const rootURL = 'https://penncoursereview.com/api/base/current/courses';
-  const altURL =  'https://penncoursereview.com/api/base/2024A/courses';
+  const altURL = 'https://penncoursereview.com/api/base/2024A/courses';
 
   const getData = async (url: string, course: string) => {
     const response = await axios.get(`${url}/${course}`);
@@ -74,11 +96,39 @@ function App() {
   }
 
   const parseData = async (data, changed: boolean) => {
-    // Parse instructor names from sections
-      let instructors = data.sections.flatMap((section: Section) => 
+    if (data.sections) { // to avoid no flatMap error
+      // Parse instructor names from sections
+      let instructors = data.sections.flatMap((section: Section) =>
         section.instructors.map((instructor: Instructor) => instructor.name)
       );
       instructors = instructors.filter((value: any, index: any, self: string | any[]) => self.indexOf(value) === index);
+
+      let professorsStats = data.sections.flatMap((section: Section) =>
+        section.instructors.map((instructor: Instructor) => ({
+          id: instructor.id,
+          name: instructor.name,
+          course_quality: section.course_quality ?? 0,
+          instructor_quality: section.instructor_quality ?? 0,
+          difficulty: section.difficulty ?? 0,
+          work_required: section.work_required ?? 0
+        })));
+
+      // filter out the nulls, only keep the ones where the instructors stats are not null
+      professorsStats = professorsStats.filter((section: Section) => section.instructors !== null);
+      
+      // for repeated instructors, group them
+      const groupedInstructors = professorsStats.reduce((acc, curr) => {
+        acc[curr.id] = acc[curr.id] || [];
+        acc[curr.id].push(curr);
+        return acc;
+      }, {});
+
+      // for the repeated instructors, keep the statistics with highest instructor_quality
+      const filteredInstructors = Object.values(groupedInstructors).map(instructors => {
+        return instructors.reduce((max, curr) => max.instructor_quality > curr.instructor_quality ? max : curr);
+      });
+
+      console.log(filteredInstructors);
 
       // Check if description contains "<b>" or "<p>" and remove that and all text after it
       let description = data.description;
@@ -94,7 +144,8 @@ function App() {
         description = ' This course is not available in the current semester. ' + description;
       }
 
-      setCourseResult({
+
+      const courseOverallDefault = {
         id: data.id,
         title: data.title,
         description: description,
@@ -104,9 +155,29 @@ function App() {
         difficulty: data.difficulty !== null ? data.difficulty : 0,
         work_required: data.work_required !== null ? data.work_required : 0,
         credits: data.credits,
-        instructors: instructors // Set the parsed instructor names
-      });
+        instructor: 'Past Instructors Overall Average'
+      }
+
+      const professorWithStatsAndOverall = filteredInstructors.map(instructor => ({
+        id: data.id,
+        title: data.title,
+        description: description,
+        prerequisites: data.prerequisites,
+        course_quality: instructor.course_quality,
+        instructor_quality: instructor.instructor_quality,
+        difficulty: instructor.difficulty,
+        work_required: instructor.work_required,
+        credits: data.credits,
+        instructor: instructor.name
+      }));
+
+      professorWithStatsAndOverall.unshift(courseOverallDefault);
+      setCourseResultProfessors(professorWithStatsAndOverall);
+      setCourseResult(courseOverallDefault);
+
+      console.log(professorWithStatsAndOverall);
       console.log(Response);
+    }
   }
 
   // asynchronously calls the penn course review API with the input course
@@ -125,11 +196,11 @@ function App() {
         let data = await getData(altURL, courseInput);
         parseData(data, true);
 
-      // Update the search history
-      // const newSearchHistory = [courseInput, ...searchHistory];
-      const newSearchHistory = [courseInput, ...searchHistory.filter(item => item !== courseInput)];
-      setSearchHistory(newSearchHistory);
-      chrome.storage.local.set({ searchHistory: newSearchHistory });
+        // Update the search history
+        // const newSearchHistory = [courseInput, ...searchHistory];
+        const newSearchHistory = [courseInput, ...searchHistory.filter(item => item !== courseInput)];
+        setSearchHistory(newSearchHistory);
+        chrome.storage.local.set({ searchHistory: newSearchHistory });
       } catch (error) {
         setCourseResult({
           id: courseInput,
@@ -141,7 +212,7 @@ function App() {
           difficulty: 0,
           work_required: 0,
           credits: 0,
-          instructors: [] as string[]
+          instructor: ''
         });
         console.error('Error fetching data, course was not found in previous semester:', error);
       }
@@ -162,7 +233,7 @@ function App() {
           difficulty: 0,
           work_required: 0,
           credits: 0,
-          instructors: [] as string[]
+          instructor: ''
         });
       } else {
         setCourseInput(result.inputcourse);
@@ -204,29 +275,29 @@ function App() {
     return `rgb(${red}, ${green}, 0)`;
   }
 
-const findCourse = async (input: string) => {
+  const findCourse = async (input: string) => {
     let selectedText = input;
 
     // Define a regular expression to match any non-word characters (symbols)
     const regex = /[^\w\s]/g;
-  
+
     // Replace all occurrences of symbols with a space
     const noSymbolStringTrimmed = selectedText.replace(regex, ' ').trim().toLocaleUpperCase();
     const codeAndNumber = noSymbolStringTrimmed.split(/ /); // splits by space
     // Check if the number part has 3 digits, and if so, append a '0'
     if (codeAndNumber[1].length === 3) {
       codeAndNumber[1] += '0';
-    } 
-    
+    }
+
     const cleanedInputCourse = codeAndNumber[0] + '-' + codeAndNumber[1]; // Code-Number e.g CIS-1200
     setCourseInput(cleanedInputCourse);
     const newinput = {
-      inputcourse : cleanedInputCourse
+      inputcourse: cleanedInputCourse
     };
-  chrome.storage.local.set(newinput, () => {
-    console.log('Input course saved');
-  });
-}
+    chrome.storage.local.set(newinput, () => {
+      console.log('Input course saved');
+    });
+  }
 
   const renderItem = (number: string, name: string) => ({
     value: number,
@@ -253,43 +324,49 @@ const findCourse = async (input: string) => {
     return classes;
   };
 
+  // Handler function to update the selected option
+  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedOption(event.target.value);
+    const name = event.target.value;
+    for (const instructorStat of courseResultProfessors) {
+      if (name === instructorStat.instructor) {
+        setCourseResult(instructorStat);
+      }
+    }
+  };
+
   return (
     <div className="App">
       <img src={pennCourseSearchImage} style={{ width: '287px', height: '50px', marginBottom: '15px' }} />
-      <AutoComplete 
+      <AutoComplete
         popupClassName="certain-category-search-dropdown"
         popupMatchSelectWidth={400}
         style={{ width: 400 }}
         options={history()}
         size="large"
-        onSelect={(input) => {findCourse(input)}}> 
-        <Input.Search size="large" 
-          placeholder="Find Course..." 
-          onSearch = {(input) => {findCourse(input)}
-      }></Input.Search>
+        onSelect={(input) => { findCourse(input) }}>
+        <Input.Search size="large"
+          placeholder="Find Course..."
+          onSearch={(input) => { findCourse(input) }
+          }></Input.Search>
       </AutoComplete>
-      <div style={{ height: '15px' }} /> 
+      <div style={{ height: '15px' }} />
       <div style={{ marginBottom: '10px' }}>
         <span className='title-one'> {courseResult.id}: </span>
         <span className='title-two' > {courseResult.title} </span>
       </div>
-        {/* <div>
-        <h2>Search History:</h2>
-        <ul>
-          {searchHistory.map((item, index) => (
-            <li key={index}>{item}</li>
-          ))}
-        </ul>
-      </div> */}
-      <span style={{color: 'grey'}}>
+      <span style={{ color: 'grey', marginBottom: '5px' }}>
         {courseResult.prerequisites}
         <span style={{ fontWeight: 'bold' }}> {`  Credits:  `} </span>
         {courseResult.credits}
-        &nbsp;&nbsp;&nbsp;
-        <span style={{ fontWeight: 'bold' }}> {`  Instructors: `} </span>
-        {courseResult.instructors.map((instructor, index) => (
-          <span key={index}> {instructor}{index !== courseResult.instructors.length - 1 ? ',' : ''} </span> 
-        ))}
+        <div style={{ fontWeight: 'bold' }}>
+          {`  Instructor:  `}
+          <select value={selectedOption} onChange={handleSelectChange}>
+            {courseResultProfessors.map(instructorStat => {
+              return <option value={instructorStat.instructor}>{instructorStat.instructor}</option>
+            })}
+          </select>
+        </div>
       </span>
       <BarChart
         width={350}
@@ -298,7 +375,7 @@ const findCourse = async (input: string) => {
         layout="vertical"
         margin={{ top: 5, right: 50, left: 20, bottom: 5 }}
       >
-        <XAxis type="number" hide={true} domain={[0, 4]}/>
+        <XAxis type="number" hide={true} domain={[0, 4]} />
         <YAxis
           dataKey="name"
           type="category"
@@ -315,7 +392,7 @@ const findCourse = async (input: string) => {
           <LabelList
             dataKey="value"
             position="right"
-            style={{ fill: "#000", fontSize: 14, fontWeight: "bold"}}
+            style={{ fill: "#000", fontSize: 14, fontWeight: "bold" }}
           />
           {data.map((entry, index) => (
             <Cell key={`${index}`} fill={getColor(index, entry.value)} />
@@ -330,32 +407,33 @@ const findCourse = async (input: string) => {
         }
       />
       {courseResult.description.length > maxLength && (
-        <button onClick={() => setIsExpanded(!isExpanded)} 
-        style={{ 
-          marginBottom: '10px',
-          marginTop: '10px',
-          padding: '8px 16px', 
-          backgroundColor: '#3875f6', 
-          color: '#fff', 
-          border: 'none', 
-          borderRadius: '5px', 
-          cursor: 'pointer', 
-          fontSize: '14px' }}>
+        <button onClick={() => setIsExpanded(!isExpanded)}
+          style={{
+            marginBottom: '10px',
+            marginTop: '10px',
+            padding: '8px 16px',
+            backgroundColor: '#3875f6',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            fontSize: '14px'
+          }}>
           {isExpanded ? 'Show less' : 'Show more'}
         </button>
       )}
-      <button onClick={clearSearchHistory} 
-        style={{ 
+      <button onClick={clearSearchHistory}
+        style={{
           marginBottom: '10px',
           marginTop: '10px',
           marginLeft: '10px',
-          padding: '8px 16px', 
-          backgroundColor: '#3875f6', 
-          color: '#fff', 
-          border: 'none', 
-          borderRadius: '5px', 
-          cursor: 'pointer', 
-          fontSize: '14px' 
+          padding: '8px 16px',
+          backgroundColor: '#3875f6',
+          color: '#fff',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer',
+          fontSize: '14px'
         }}>
         Clear Search History
       </button>

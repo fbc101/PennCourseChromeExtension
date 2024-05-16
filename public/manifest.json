@@ -11,7 +11,7 @@
       "512": "images/android-chrome-512x512.png"
     },
     "offline_enabled": true,
-    "permissions": ["storage", "activeTab", "contextMenus", "tabs", "scripting"],
+    "permissions": ["storage", "activeTab", "scripting"],
     "background": {
       "service_worker": "background.js"
     },
