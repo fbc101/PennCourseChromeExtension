@@ -1,12 +1,3 @@
-chrome.action.onClicked.addListener((tab) => {
-  chrome.scripting.executeScript({
-    target: {tabId: tab.id, allFrames: true},
-    files: ["content.js"],
-  }).then(injectionResults => {
-    console.log("highlight done!");
-  });
-});
-
 // cleans the highlighted text to retrieve the course_id, otherwise ignore the text
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
   const safe = true;
