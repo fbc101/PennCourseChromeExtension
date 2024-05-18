@@ -177,6 +177,12 @@ function App() {
 
       console.log(professorWithStatsAndOverall);
       console.log(Response);
+
+      // Update the search history
+      // const newSearchHistory = [courseInput, ...searchHistory];
+      const newSearchHistory = [courseInput, ...searchHistory.filter(item => item !== courseInput)];
+      setSearchHistory(newSearchHistory);
+      chrome.storage.local.set({ searchHistory: newSearchHistory });
     }
   }
 
@@ -185,22 +191,10 @@ function App() {
     try {
       let data = await getData(rootURL, courseInput);
       parseData(data, false);
-
-      // Update the search history
-      // const newSearchHistory = [courseInput, ...searchHistory];
-      const newSearchHistory = [courseInput, ...searchHistory.filter(item => item !== courseInput)];
-      setSearchHistory(newSearchHistory);
-      chrome.storage.local.set({ searchHistory: newSearchHistory });
     } catch (error) {
       try {
         let data = await getData(altURL, courseInput);
         parseData(data, true);
-
-        // Update the search history
-        // const newSearchHistory = [courseInput, ...searchHistory];
-        const newSearchHistory = [courseInput, ...searchHistory.filter(item => item !== courseInput)];
-        setSearchHistory(newSearchHistory);
-        chrome.storage.local.set({ searchHistory: newSearchHistory });
       } catch (error) {
         setCourseResult({
           id: courseInput,
@@ -309,9 +303,6 @@ function App() {
         }}
       >
         {number}
-        <span>
-          {/* <UserOutlined /> {name} */}
-        </span>
       </div>
     ),
   });
