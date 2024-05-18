@@ -270,27 +270,38 @@ function App() {
   }
 
   const findCourse = async (input: string) => {
-    let selectedText = input;
-
-    // Define a regular expression to match any non-word characters (symbols)
     const regex = /[^\w\s]/g;
+    const entireCodeRegex = /[a-zA-z]{2,4}([-\s]|(&nbsp;))[0-9]{3,4}/;
 
-    // Replace all occurrences of symbols with a space
-    const noSymbolStringTrimmed = selectedText.replace(regex, ' ').trim().toLocaleUpperCase();
-    const codeAndNumber = noSymbolStringTrimmed.split(/ /); // splits by space
-    // Check if the number part has 3 digits, and if so, append a '0'
-    if (codeAndNumber[1].length === 3) {
-      codeAndNumber[1] += '0';
+    const match = entireCodeRegex.exec(input);
+
+    // if a course was found, proceed to clean it
+    if (match) {
+      try {
+        // On the first course match, replace all occurrences of any symbols with a space
+        const noSymbolStringTrimmed = match[0].replace(regex, ' ').trim().toLocaleUpperCase();
+        // splits by space and &nbsp; 
+        const codeAndNumber = noSymbolStringTrimmed.split(/\s|&nbsp;/);
+    
+        // Check if the number part has 3 digits, and if so, append a '0'
+        if (codeAndNumber[1].length === 3) {
+          codeAndNumber[1] += '0';
+        }
+    
+        const cleanedInputCourse = codeAndNumber[0] + '-' + codeAndNumber[1]; // Code-Number e.g CIS-1200
+    
+        const newinput = {
+          inputcourse: cleanedInputCourse
+        };
+    
+        chrome.storage.local.set(newinput, () => {
+          console.log('Input course saved');
+        });
+        setCourseInput(cleanedInputCourse);
+      } catch (error) {
+        console.log(error);
+      }
     }
-
-    const cleanedInputCourse = codeAndNumber[0] + '-' + codeAndNumber[1]; // Code-Number e.g CIS-1200
-    setCourseInput(cleanedInputCourse);
-    const newinput = {
-      inputcourse: cleanedInputCourse
-    };
-    chrome.storage.local.set(newinput, () => {
-      console.log('Input course saved');
-    });
   }
 
   const renderItem = (number: string, name: string) => ({
@@ -338,7 +349,7 @@ function App() {
         onSelect={(input) => { findCourse(input) }}>
         <Input.Search size="large"
           placeholder="Find Course..."
-          onSearch={(input) => { findCourse(input) }
+          onSearch={(input) => { input && findCourse(input) }
           }></Input.Search>
       </AutoComplete>
       <div style={{ height: '15px' }} />
