@@ -51,6 +51,8 @@ You can add issues on the [Issues Section](https://github.com/fbc101/PennCourseC
 - https://github.com/jlumbroso/chrome-extension-text-collector : Provided the foundation for our extension's pop-up and background logic
 - https://github.com/zealotjin/quicklygpt-extension : Provided the foundation for quick highlight search
 
+### API 
+- https://penncoursereview.com/api/documentation/ : This extension is possible thanks to PennLabs
 ## License 
 
 MIT License
