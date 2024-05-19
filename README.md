@@ -7,6 +7,11 @@ To learn more, please visit our [landing page](https://mattfu25.github.io/penn-c
 ## Authors
 Franci Branda-Chen, Eshaan Chichula, Matt Fu, Jake G. Murphy
 
+## Download
+
+You can now download the extension on the Chrome Web Store by using this [download link](https://chromewebstore.google.com/detail/penn-course-search/ebepgdgiamijmmppoaobmbohijppaieo?hl=en&authuser=0)
+<img width="1440" alt="image" src="https://github.com/fbc101/PennCourseChromeExtension/assets/157915007/e5b882b7-d3ee-4589-9754-fde99c203f3c">
+
 ## Getting Started
 
 Download the latest release from [Releases](https://github.com/fbc101/PennCourseChromeExtension/releases), and unzip the folder.
