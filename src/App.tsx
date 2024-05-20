@@ -361,14 +361,30 @@ function App() {
         {courseResult.prerequisites}
         <span style={{ fontWeight: 'bold' }}> {`  Credits:  `} </span>
         {courseResult.credits}
-        <div style={{ fontWeight: 'bold' }}>
-          {`  Instructor:  `}
-          <select value={selectedOption} onChange={handleSelectChange}>
-            {courseResultProfessors.map(instructorStat => {
-              return <option value={instructorStat.instructor}>{instructorStat.instructor}</option>
-            })}
-          </select>
-        </div>
+      <div style={{ fontWeight: 'bold', marginTop: '10px', marginBottom: '10px' }}>
+        {`  Instructor:  `}
+        <select 
+          value={selectedOption} 
+          onChange={handleSelectChange} 
+          style={{
+            padding: '5px',
+            fontSize: '12px',
+            border: '2px solid #3875f6',
+            borderRadius: '3px',
+            boxShadow: '0 0 10px 2px rgba(0,0,0,0.1)',
+            outline: 'none',
+            color: '#444',
+            backgroundColor: '#f5f5f5',
+            appearance: 'none',
+            WebkitAppearance: 'none',
+            MozAppearance: 'none'
+          }}
+        >
+          {courseResultProfessors.map(instructorStat => {
+            return <option value={instructorStat.instructor}>{instructorStat.instructor}</option>
+          })}
+        </select>
+      </div>
       </span>
       <BarChart
         width={350}
