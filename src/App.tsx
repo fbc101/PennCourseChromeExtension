@@ -1,13 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import axios from 'axios'
-import { MiniSnippetItem } from './components/MiniSnippet'
-import { MiniSnippetTitle1 } from './components/MiniSnippet'
-import { MiniSnippetTitle2 } from './components/MiniSnippet'
-import { MiniSnippetText } from './components/MiniSnippet'
-import { AutoComplete, Input, Space } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
-import type { SearchProps } from 'antd/es/input/Search';
+import { AutoComplete, Input } from 'antd';
 import pennCourseSearchImage from '/public/images/pennCourseSearch.png';
 
 import {
@@ -18,7 +12,6 @@ import {
   Cell,
   LabelList,
 } from "recharts";
-import { render } from 'react-dom';
 
 interface Instructor {
   id: number,
@@ -412,13 +405,11 @@ function App() {
           ))}
         </Bar>
       </BarChart>
-      <MiniSnippetText
-        text={
-          isExpanded || courseResult.description.length <= maxLength
-            ? courseResult.description
-            : courseResult.description.slice(0, maxLength) + '...'
-        }
-      />
+      <div>
+        {isExpanded || courseResult.description.length <= maxLength
+          ? courseResult.description
+          : courseResult.description.slice(0, maxLength) + '...'}
+      </div>
       {courseResult.description.length > maxLength && (
         <button onClick={() => setIsExpanded(!isExpanded)}
           style={{

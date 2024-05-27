@@ -10,18 +10,6 @@
   background-color: white;
 }
 
-.snippet-list {
-  list-style-type: none;
-  padding: 0;
-}
-
-.snippet-item {
-  margin-bottom: 1rem;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  text-align: left;
-}
-
 .title-one {
   font-size: 17px;
   font-weight: bold;
@@ -33,16 +21,4 @@
   text-align: center;
 }
 
-.mini-snippet {
-  font-size: 12px;
-  text-align: center;
-}
 
-.snippet-text {
-  font-size: 12px;
-  text-align: left;
-}
-
-.snippet-item button {
-  margin-left: 0.5rem;
-}
