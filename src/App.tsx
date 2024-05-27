@@ -115,7 +115,7 @@ function App() {
 
       // filter out the nulls, only keep the ones where the instructors stats are not null
       professorsStats = professorsStats.filter((section: Section) => section.instructors !== null);
-      
+
       // for repeated instructors, group them
       const groupedInstructors = professorsStats.reduce((acc, curr) => {
         acc[curr.id] = acc[curr.id] || [];
@@ -282,18 +282,18 @@ function App() {
         const noSymbolStringTrimmed = match[0].replace(regex, ' ').trim().toLocaleUpperCase();
         // splits by space and &nbsp; 
         const codeAndNumber = noSymbolStringTrimmed.split(/\s|&nbsp;/);
-    
+
         // Check if the number part has 3 digits, and if so, append a '0'
         if (codeAndNumber[1].length === 3) {
           codeAndNumber[1] += '0';
         }
-    
+
         const cleanedInputCourse = codeAndNumber[0] + '-' + codeAndNumber[1]; // Code-Number e.g CIS-1200
-    
+
         const newinput = {
           inputcourse: cleanedInputCourse
         };
-    
+
         chrome.storage.local.set(newinput, () => {
           console.log('Input course saved');
         });
@@ -361,30 +361,25 @@ function App() {
         {courseResult.prerequisites}
         <span style={{ fontWeight: 'bold' }}> {`  Credits:  `} </span>
         {courseResult.credits}
-      <div style={{ fontWeight: 'bold', marginTop: '10px', marginBottom: '10px' }}>
-        {`  Instructor:  `}
-        <select 
-          value={selectedOption} 
-          onChange={handleSelectChange} 
-          style={{
-            padding: '5px',
-            fontSize: '12px',
-            border: '2px solid #3875f6',
-            borderRadius: '3px',
-            boxShadow: '0 0 10px 2px rgba(0,0,0,0.1)',
-            outline: 'none',
-            color: '#444',
-            backgroundColor: '#f5f5f5',
-            appearance: 'none',
-            WebkitAppearance: 'none',
-            MozAppearance: 'none'
-          }}
-        >
-          {courseResultProfessors.map(instructorStat => {
-            return <option value={instructorStat.instructor}>{instructorStat.instructor}</option>
-          })}
-        </select>
-      </div>
+        <div style={{ fontWeight: 'bold', marginTop: '10px', marginBottom: '10px' }}>
+          {`  Instructor:  `}
+          <select
+            value={selectedOption}
+            onChange={handleSelectChange}
+            style={{
+              padding: '5px',
+              fontSize: '12px',
+              borderRadius: '3px',
+              boxShadow: '0 0 10px 2px rgba(0,0,0,0.1)',
+              color: '#444',
+              backgroundColor: '#f5f5f5',
+            }}
+          >
+            {courseResultProfessors.map(instructorStat => {
+              return <option value={instructorStat.instructor}>{instructorStat.instructor}</option>
+            })}
+          </select>
+        </div>
       </span>
       <BarChart
         width={350}
