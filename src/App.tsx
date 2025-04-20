@@ -3,7 +3,7 @@ import './App.css';
 import axios from 'axios'
 import { AutoComplete, Input } from 'antd';
 import pennCourseSearchImage from '/public/images/pennCourseSearch.png';
-
+import copy from './assets/copy.png';
 import {
   BarChart,
   Bar,
@@ -377,16 +377,58 @@ function App() {
           }></Input.Search>
       </AutoComplete>
       <div style={{ height: '15px' }} />
-      <a 
-        href={`https://penncoursereview.com/course/${courseResult.id}/`} 
-        target="_blank" 
-        style={{ textDecoration: 'none', color: 'inherit' }}
+      <div style={{ marginBottom: '10px', cursor: 'pointer' }}>
+      <div
+        style={{
+          marginBottom: '10px',
+          display: 'flex',
+          alignItems: 'center',     
+          justifyContent: 'center', 
+        }}
       >
-        <div style={{ marginBottom: '10px', cursor: 'pointer' }}>
-          <span className='title-one'> {courseResult.id}: </span>
-          <span className='title-two'> {courseResult.title} </span>
-        </div>
-      </a>
+        <a
+          href={`https://penncoursereview.com/course/${courseResult.id}/`}
+          target="_blank"
+          style={{
+            textDecoration: 'none',
+            color: 'inherit',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <span className='title-one'>{courseResult.id}:</span>
+          <span className='title-two' style={{ marginLeft: '6px' }}>
+            {courseResult.title}
+          </span>
+        </a>
+
+        <button
+          onClick={() =>
+            navigator.clipboard.writeText(`${courseResult.id}: ${courseResult.title}`)
+          }
+          style={{
+            marginLeft: '6px',
+            cursor: 'pointer',
+            background: 'none',
+            border: 'none',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+          title="Copy to clipboard"
+        >
+          <img
+            src={copy}
+            alt="copy"
+            style={{
+              width: '14px',
+              height: '14px',
+              objectFit: 'contain',
+              opacity: 0.7,
+            }}
+          />
+        </button>
+      </div>
+    </div>
       <span style={{ color: 'grey', marginBottom: '5px' }}>
         {courseResult.prerequisites}
         <span style={{ fontWeight: 'bold' }}> {`  Credits:  `} </span>
