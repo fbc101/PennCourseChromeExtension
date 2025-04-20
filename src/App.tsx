@@ -377,10 +377,16 @@ function App() {
           }></Input.Search>
       </AutoComplete>
       <div style={{ height: '15px' }} />
-      <div style={{ marginBottom: '10px' }}>
-        <span className='title-one'> {courseResult.id}: </span>
-        <span className='title-two' > {courseResult.title} </span>
-      </div>
+      <a 
+        href={`https://penncoursereview.com/course/${courseResult.id}/`} 
+        target="_blank" 
+        style={{ textDecoration: 'none', color: 'inherit' }}
+      >
+        <div style={{ marginBottom: '10px', cursor: 'pointer' }}>
+          <span className='title-one'> {courseResult.id}: </span>
+          <span className='title-two'> {courseResult.title} </span>
+        </div>
+      </a>
       <span style={{ color: 'grey', marginBottom: '5px' }}>
         {courseResult.prerequisites}
         <span style={{ fontWeight: 'bold' }}> {`  Credits:  `} </span>
