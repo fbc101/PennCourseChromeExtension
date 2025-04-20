@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import axios from 'axios'
 import { AutoComplete, Input } from 'antd';
-import pennCourseSearchImage from '/public/images/pennCourseSearch.png';
+import pennCourseSearchImage from './assets/pennCourseSearch.png';
 import copy from './assets/copy.png';
 import {
   BarChart,
