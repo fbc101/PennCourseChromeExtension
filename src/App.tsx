@@ -62,6 +62,9 @@ function App() {
   // Get the initial search history from storage
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
 
+  const [options, setOptions] = useState<{ value: string }[]>([]);
+  const [courses, setCourses] = useState<{ title: string, desc: string[], url: string }[]>([]);
+
   useEffect(() => {
     chrome.storage.local.get(['searchHistory'], (result) => {
       if (result.searchHistory) {
@@ -330,6 +333,33 @@ function App() {
     }
   };
 
+  const getAutocompleteCourses = async () => {
+    const response = await axios.get('https://penncoursereview.com/api/review/autocomplete');
+      setCourses(response.data.courses);
+  };
+
+  useEffect(() => {
+    getAutocompleteCourses();
+  }, []); // this makes a call once to retrieve the courses
+
+  const filterCourseOptions = (input: string) => {
+    if (!input) {
+      setOptions([]);
+      return;
+    }
+    
+    const lower = input.toLowerCase().replace(/\b([a-zA-Z]{2,4}) ([0-9]{1,4})\b/g, "$1-$2");
+
+    // Filter courses dynamically
+    const filtered = courses
+      .filter((course) =>
+        course.title.toLowerCase().includes(lower) ||
+        course.desc.some(d => d.toLowerCase().includes(lower))
+      )
+      .map((course) => ({ value: `${course.title}: ${course.desc[0]}` })); // Map to { value } format for AutoComplete
+    setOptions(filtered); // Update options
+  };
+
   return (
     <div className="App">
       <img src={pennCourseSearchImage} style={{ width: '287px', height: '50px', marginBottom: '15px' }} />
@@ -337,9 +367,10 @@ function App() {
         popupClassName="certain-category-search-dropdown"
         popupMatchSelectWidth={400}
         style={{ width: 400 }}
-        options={history()}
+        options={options.length == 0 ? history() : options} 
         size="large"
-        onSelect={(input) => { findCourse(input) }}>
+        onSelect={(input) => { findCourse(input) }}
+        onChange={(e) => { filterCourseOptions(e) }}>
         <Input.Search size="large"
           placeholder="Find Course..."
           onSearch={(input) => { input && findCourse(input) }
