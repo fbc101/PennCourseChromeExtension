@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import axios from 'axios'
-import { AutoComplete, Input } from 'antd';
+import axios from 'axios';
+import { AutoComplete, Input, Checkbox } from 'antd';
 import pennCourseSearchImage from './assets/pennCourseSearch.png';
 import copy from './assets/copy.png';
 import {
@@ -26,7 +26,14 @@ interface Section {
   work_required: number
 }
 
-
+// Define a course selection interface
+interface CourseSelection {
+  id: string,
+  title: string,
+  isChecked: boolean,
+  timestamp: number, // For sorting by recency
+  courseData?: any // Store the full course data for quick access
+}
 
 function App() {
   const [courseInput, setCourseInput] = useState('');
@@ -62,13 +69,27 @@ function App() {
   // Get the initial search history from storage
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
 
+  // New states for checkbox feature
+  const [currentSelections, setCurrentSelections] = useState<CourseSelection[]>([]);
+  const [previousSelections, setPreviousSelections] = useState<CourseSelection[]>([]);
+  const [showCurrentSelections, setShowCurrentSelections] = useState(true);
+  const [showPreviousSelections, setShowPreviousSelections] = useState(false);
+
   const [options, setOptions] = useState<{ value: string }[]>([]);
   const [courses, setCourses] = useState<{ title: string, desc: string[], url: string }[]>([]);
 
+  const [isExpanded, setIsExpanded] = useState(false);
+  const maxLength = 300; // desired maximum length
+
   useEffect(() => {
-    chrome.storage.local.get(['searchHistory'], (result) => {
+    // Load search history and selections from chrome storage
+    chrome.storage.local.get(['searchHistory', 'previousSelections'], (result) => {
       if (result.searchHistory) {
         setSearchHistory(result.searchHistory);
+      }
+      
+      if (result.previousSelections) {
+        setPreviousSelections(result.previousSelections);
       }
     });
   }, []);
@@ -80,8 +101,16 @@ function App() {
     setSearchHistory([]);
   };
 
-  const [isExpanded, setIsExpanded] = useState(false);
-  const maxLength = 300; // desired maximum length
+  const clearAllSelections = () => {
+    // Clear current selections
+    setCurrentSelections([]);
+    
+    // Clear previous selections from storage
+    chrome.storage.local.remove('previousSelections', () => {
+      console.log('Previous selections cleared');
+    });
+    setPreviousSelections([]);
+  };
 
   const rootURL = 'https://penncoursereview.com/api/base/current/courses';
   const altURL = 'https://penncoursereview.com/api/base/2024A/courses';
@@ -124,8 +153,6 @@ function App() {
         return instructors.reduce((max, curr) => max.instructor_quality > curr.instructor_quality ? max : curr);
       });
 
-      console.log(filteredInstructors);
-
       // Check if description contains "<b>" or "<p>" and remove that and all text after it
       let description = data.description;
       if (description.includes('<b>')) {
@@ -139,7 +166,6 @@ function App() {
       if (changed) {
         description = ' This course is not available in the current semester. ' + description;
       }
-
 
       const courseOverallDefault = {
         id: data.id,
@@ -171,14 +197,24 @@ function App() {
       setCourseResultProfessors(professorWithStatsAndOverall);
       setCourseResult(courseOverallDefault);
 
-      console.log(professorWithStatsAndOverall);
-      console.log(Response);
-
       // Update the search history
-      // const newSearchHistory = [courseInput, ...searchHistory];
       const newSearchHistory = [courseInput, ...searchHistory.filter(item => item !== courseInput)];
       setSearchHistory(newSearchHistory);
       chrome.storage.local.set({ searchHistory: newSearchHistory });
+
+      // Add to current selections if not already present
+      const newCourseSelection = {
+        id: data.id,
+        title: data.title,
+        isChecked: false,
+        timestamp: Date.now(),
+        courseData: courseOverallDefault
+      };
+
+      // Check if course already exists in current selections
+      if (!currentSelections.some(selection => selection.id === newCourseSelection.id)) {
+        setCurrentSelections(prev => [...prev, newCourseSelection]);
+      }
     }
   }
 
@@ -225,11 +261,13 @@ function App() {
           credits: 0,
           instructor: ''
         });
-      } else {
+      } else if (result.inputcourse) {
         setCourseInput(result.inputcourse);
       }
     });
-    fetchCourse();
+    if (courseInput) {
+      fetchCourse();
+    }
   }, [courseInput]);
 
   // Format data for recharts
@@ -335,7 +373,7 @@ function App() {
 
   const getAutocompleteCourses = async () => {
     const response = await axios.get('https://penncoursereview.com/api/review/autocomplete');
-      setCourses(response.data.courses);
+    setCourses(response.data.courses);
   };
 
   useEffect(() => {
@@ -358,6 +396,289 @@ function App() {
       )
       .map((course) => ({ value: `${course.title}: ${course.desc[0]}` })); // Map to { value } format for AutoComplete
     setOptions(filtered); // Update options
+  };
+
+  // Handle checkbox change for current selections
+  const handleCurrentSelectionChange = (courseId: string, checked: boolean) => {
+    setCurrentSelections(prev => 
+      prev.map(selection => 
+        selection.id === courseId 
+          ? { ...selection, isChecked: checked } 
+          : selection
+      )
+    );
+  };
+
+  // Handle checkbox change for previous selections
+  const handlePreviousSelectionChange = (courseId: string, checked: boolean) => {
+    setPreviousSelections(prev => {
+      const updated = prev.map(selection => 
+        selection.id === courseId 
+          ? { ...selection, isChecked: checked } 
+          : selection
+      );
+      
+      // Save the updated selections to storage
+      chrome.storage.local.set({ previousSelections: updated });
+      return updated;
+    });
+  };
+
+  // Save current selections to previous selections on session end or when explicitly requested
+  const saveCurrentSelectionsToPrevious = () => {
+    // Filter out only the checked selections to save
+    const checkedSelections = currentSelections.filter(selection => selection.isChecked);
+    
+    if (checkedSelections.length === 0) {
+      return; // Don't save if nothing is checked
+    }
+    
+    // Merge with existing previous selections, avoiding duplicates by ID
+    const newPreviousSelections = [
+      ...checkedSelections,
+      ...previousSelections.filter(prev => 
+        !checkedSelections.some(current => current.id === prev.id)
+      )
+    ];
+    
+    setPreviousSelections(newPreviousSelections);
+    chrome.storage.local.set({ previousSelections: newPreviousSelections });
+    
+    // Clear current selections after saving
+    setCurrentSelections([]);
+  };
+
+  // Load a course from selections into the main view
+  const loadCourseFromSelection = (selection: CourseSelection) => {
+    // If course data is stored with the selection, use it directly
+    if (selection.courseData) {
+      setCourseResult(selection.courseData);
+      setSelectedOption('Past Instructors Overall Average');
+    } else {
+      // Otherwise fetch it again
+      setCourseInput(selection.id);
+    }
+  };
+
+  // Remove a course from current selections
+  const removeFromCurrentSelections = (courseId: string) => {
+    setCurrentSelections(prev => prev.filter(selection => selection.id !== courseId));
+  };
+
+  // Remove a course from previous selections
+  const removeFromPreviousSelections = (courseId: string) => {
+    const updated = previousSelections.filter(selection => selection.id !== courseId);
+    setPreviousSelections(updated);
+    chrome.storage.local.set({ previousSelections: updated });
+  };
+
+  // Component for selections display
+  const SelectionsPanel = () => (
+    <div style={{ marginTop: '15px', maxHeight: '200px', overflowY: 'auto', border: '1px solid #e8e8e8', borderRadius: '5px', padding: '10px' }}>
+      {/* Current Selections Section */}
+      <div>
+        <div 
+          style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            marginBottom: '10px',
+            cursor: 'pointer',
+            backgroundColor: '#f5f5f5',
+            padding: '5px',
+            borderRadius: '3px'
+          }}
+          onClick={() => setShowCurrentSelections(!showCurrentSelections)}
+        >
+          <h4 style={{ margin: 0 }}>✓ Currently Selected ({currentSelections.length})</h4>
+          <span>{showCurrentSelections ? '▼' : '►'}</span>
+        </div>
+        
+        {showCurrentSelections && (
+          <div style={{ marginBottom: '15px' }}>
+            {currentSelections.length === 0 ? (
+              <p style={{ color: 'gray', fontSize: '12px' }}>No courses selected in this session</p>
+            ) : (
+              currentSelections.map(selection => (
+                <div key={selection.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
+                  <Checkbox 
+                    checked={selection.isChecked}
+                    onChange={(e) => handleCurrentSelectionChange(selection.id, e.target.checked)}
+                  />
+                  <span 
+                    style={{ marginLeft: '5px', cursor: 'pointer', flexGrow: 1 }}
+                    onClick={() => loadCourseFromSelection(selection)}
+                  >
+                    <strong>{selection.id}</strong>: {selection.title}
+                  </span>
+                  <button 
+                    onClick={() => removeFromCurrentSelections(selection.id)}
+                    style={{ 
+                      backgroundColor: 'transparent', 
+                      border: 'none',
+                      cursor: 'pointer',
+                      color: 'red',
+                      fontSize: '12px'
+                    }}
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))
+            )}
+            {currentSelections.length > 0 && (
+              <button 
+                onClick={saveCurrentSelectionsToPrevious}
+                style={{
+                  padding: '4px 8px',
+                  backgroundColor: '#3875f6',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '3px',
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                  marginTop: '5px'
+                }}
+              >
+                Save Checked to History
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+      
+      {/* Previous Selections Section */}
+      <div>
+        <div 
+          style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            marginBottom: '10px',
+            cursor: 'pointer',
+            backgroundColor: '#f5f5f5',
+            padding: '5px',
+            borderRadius: '3px'
+          }}
+          onClick={() => setShowPreviousSelections(!showPreviousSelections)}
+        >
+          <h4 style={{ margin: 0 }}>📁 Previously Selected ({previousSelections.length})</h4>
+          <span>{showPreviousSelections ? '▼' : '►'}</span>
+        </div>
+        
+        {showPreviousSelections && (
+          <div>
+            {previousSelections.length === 0 ? (
+              <p style={{ color: 'gray', fontSize: '12px' }}>No previous selections found</p>
+            ) : (
+              previousSelections.map(selection => (
+                <div key={selection.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
+                  <Checkbox 
+                    checked={selection.isChecked}
+                    onChange={(e) => handlePreviousSelectionChange(selection.id, e.target.checked)}
+                  />
+                  <span 
+                    style={{ marginLeft: '5px', cursor: 'pointer', flexGrow: 1 }}
+                    onClick={() => loadCourseFromSelection(selection)}
+                  >
+                    <strong>{selection.id}</strong>: {selection.title}
+                  </span>
+                  <button 
+                    onClick={() => removeFromPreviousSelections(selection.id)}
+                    style={{ 
+                      backgroundColor: 'transparent', 
+                      border: 'none',
+                      cursor: 'pointer',
+                      color: 'red',
+                      fontSize: '12px'
+                    }}
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  // Component for course comparison
+  const CompareCoursesPanel = () => {
+    // Get all checked courses from both current and previous selections
+    const checkedCourses = [
+      ...currentSelections.filter(c => c.isChecked),
+      ...previousSelections.filter(c => c.isChecked)
+    ];
+    
+    return (
+      <div style={{ marginTop: '15px' }}>
+        <h4>Course Comparison</h4>
+        {checkedCourses.length < 2 ? (
+          <p style={{ color: 'gray', fontSize: '12px' }}>Select at least 2 courses to compare</p>
+        ) : (
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr>
+                  <th style={{ padding: '5px', borderBottom: '1px solid #ddd', textAlign: 'left' }}>Course</th>
+                  <th style={{ padding: '5px', borderBottom: '1px solid #ddd', textAlign: 'center' }}>Course Quality</th>
+                  <th style={{ padding: '5px', borderBottom: '1px solid #ddd', textAlign: 'center' }}>Instructor Quality</th>
+                  <th style={{ padding: '5px', borderBottom: '1px solid #ddd', textAlign: 'center' }}>Difficulty</th>
+                  <th style={{ padding: '5px', borderBottom: '1px solid #ddd', textAlign: 'center' }}>Work Required</th>
+                </tr>
+              </thead>
+              <tbody>
+                {checkedCourses.map(course => (
+                  <tr key={course.id}>
+                    <td style={{ padding: '5px', borderBottom: '1px solid #ddd' }}>
+                      <strong>{course.id}</strong>
+                    </td>
+                    <td style={{ 
+                      padding: '5px', 
+                      borderBottom: '1px solid #ddd', 
+                      textAlign: 'center',
+                      backgroundColor: getColor(0, course.courseData?.course_quality || 0),
+                      color: course.courseData?.course_quality > 2 ? '#000' : '#fff'
+                    }}>
+                      {course.courseData?.course_quality.toFixed(1) || 'N/A'}
+                    </td>
+                    <td style={{ 
+                      padding: '5px', 
+                      borderBottom: '1px solid #ddd', 
+                      textAlign: 'center',
+                      backgroundColor: getColor(1, course.courseData?.instructor_quality || 0),
+                      color: course.courseData?.instructor_quality > 2 ? '#000' : '#fff'
+                    }}>
+                      {course.courseData?.instructor_quality.toFixed(1) || 'N/A'}
+                    </td>
+                    <td style={{ 
+                      padding: '5px', 
+                      borderBottom: '1px solid #ddd', 
+                      textAlign: 'center',
+                      backgroundColor: getColor(2, course.courseData?.difficulty || 0),
+                      color: course.courseData?.difficulty > 2 ? '#fff' : '#000'
+                    }}>
+                      {course.courseData?.difficulty.toFixed(1) || 'N/A'}
+                    </td>
+                    <td style={{ 
+                      padding: '5px', 
+                      borderBottom: '1px solid #ddd', 
+                      textAlign: 'center',
+                      backgroundColor: getColor(3, course.courseData?.work_required || 0),
+                      color: course.courseData?.work_required > 2 ? '#fff' : '#000'
+                    }}>
+                      {course.courseData?.work_required.toFixed(1) || 'N/A'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -505,22 +826,41 @@ function App() {
           {isExpanded ? 'Show less' : 'Show more'}
         </button>
       )}
-      <button onClick={clearSearchHistory}
-        style={{
-          marginBottom: '10px',
-          marginTop: '10px',
-          marginLeft: '10px',
-          padding: '8px 16px',
-          backgroundColor: '#3875f6',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '5px',
-          cursor: 'pointer',
-          fontSize: '14px'
-        }}>
-        Clear Search History
-      </button>
-      <div style={{ textAlign: 'center', marginTop: '10px' }}>
+      
+      {/* New Course Selection Feature */}
+      <SelectionsPanel />
+      
+      {/* Course Comparison Panel */}
+      <CompareCoursesPanel />
+      
+      <div style={{ marginTop: '15px', display: 'flex', justifyContent: 'space-between' }}>
+        <button onClick={clearSearchHistory}
+          style={{
+            padding: '8px 16px',
+            backgroundColor: '#3875f6',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            fontSize: '14px'
+          }}>
+          Clear Search History
+        </button>
+        <button onClick={clearAllSelections}
+          style={{
+            padding: '8px 16px',
+            backgroundColor: '#e74c3c',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            fontSize: '14px'
+          }}>
+          Clear All Selections
+        </button>
+      </div>
+      
+      <div style={{ textAlign: 'center', marginTop: '15px' }}>
         <a href="https://forms.gle/qDwm7njL9JDvoHyN8" target="_blank" rel="noopener noreferrer" style={{ fontSize: '14px' }}>
           Click here to give us feedback!
         </a>
