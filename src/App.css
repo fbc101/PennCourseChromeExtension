@@ -1,24 +1,131 @@
-
 .App {
-  color: black;
-  text-align: center;
-}
-
-.container {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  padding: 20px;
   width: 400px;
-  padding: 1rem;
-  background-color: white;
+  max-width: 100%;
 }
 
 .title-one {
-  font-size: 17px;
   font-weight: bold;
-  text-align: center;
+  font-size: 16px;
 }
 
 .title-two {
-  font-size: 17px;
+  font-size: 16px;
+}
+
+/* Styles for Checkbox Selections */
+.selection-container {
+  margin-top: 15px;
+  border: 1px solid #e8e8e8;
+  border-radius: 5px;
+  padding: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  cursor: pointer;
+  background-color: #f5f5f5;
+  padding: 5px;
+  border-radius: 3px;
+}
+
+.section-header h4 {
+  margin: 0;
+}
+
+.selection-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.selection-title {
+  margin-left: 5px;
+  cursor: pointer;
+  flex-grow: 1;
+}
+
+.remove-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: #e74c3c;
+  font-size: 12px;
+}
+
+.save-button {
+  padding: 4px 8px;
+  background-color: #3875f6;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.clear-button {
+  padding: 8px 16px;
+  background-color: #3875f6;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.danger-button {
+  background-color: #e74c3c;
+}
+
+/* Comparison Table Styles */
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.comparison-table th,
+.comparison-table td {
+  padding: 5px;
+  border-bottom: 1px solid #ddd;
+}
+
+.comparison-table th {
+  text-align: left;
+}
+
+.comparison-table td {
   text-align: center;
 }
 
+/* Notification Styles */
+.selection-notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #3875f6;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10000;
+  transition: opacity 0.3s;
+  cursor: pointer;
+}
 
+/* Empty state text */
+.empty-text {
+  color: gray;
+  font-size: 12px;
+}
+
+/* Antd overrides */
+.ant-select-dropdown {
+  max-height: 300px;
+}
