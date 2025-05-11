@@ -34,3 +34,57 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     }
   }
 });
+
+
+// LLM API call
+// This is the function that will be called when the user clicks the extension icon
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === 'getAiSelection') {
+    // 1) fetch the API key
+    chrome.storage.local.get(['openaiKey'], async ({ openaiKey }) => {
+      if (!openaiKey) {
+        sendResponse({ error: 'No OpenAI key saved' });
+        return;
+      }
+
+      // 2) build your prompt from the courses array
+      const courseList = message.courses
+        .map(c => `• ${c.id}: ${c.title}`)
+        .join('\n');
+      const system = {
+        role: 'system',
+        content: 'You are a helpful academic advisor for Penn undergrads.'
+      };
+      const user = {
+        role: 'user',
+        content: `Here are the courses I’m interested in: ${courseList} 
+        Based on workload, difficulty, and quality averages, which one would you recommend I take this coming semester? Explain briefly.`.trim()
+      };
+
+      // 3) call OpenAI
+      try {
+        const res = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${openaiKey}`
+          },
+          body: JSON.stringify({
+            model: 'gpt-4',       // or whichever model you want
+            messages: [system, user],
+            max_tokens: 200
+          })
+        });
+        const data = await res.json();
+        const answer = data.choices?.[0]?.message?.content || 'No response';
+        sendResponse({ answer });
+      } catch (err) {
+        console.error(err);
+        sendResponse({ answer: 'Error calling OpenAI.' });
+      }
+    });
+
+    // return true to indicate we’ll call sendResponse asynchronously
+    return true;
+  }
+});
