@@ -32,7 +32,8 @@ interface CourseSelection {
   title: string,
   isChecked: boolean,
   timestamp: number, // For sorting by recency
-  courseData?: any // Store the full course data for quick access
+  courseData?: any, // Store the full course data for quick access
+  note?: string
 }
 
 function App() {
@@ -110,6 +111,20 @@ function App() {
       console.log('Previous selections cleared');
     });
     setPreviousSelections([]);
+  };
+
+  const updateNote = (courseId: string, newNote: string, type: 'current' | 'previous') => {
+    if (type === 'current') {
+      setCurrentSelections(prev => prev.map(selection =>
+        selection.id === courseId ? { ...selection, note: newNote } : selection
+      ));
+    } else {
+      const updated = previousSelections.map(selection =>
+        selection.id === courseId ? { ...selection, note: newNote } : selection
+      );
+      setPreviousSelections(updated);
+      chrome.storage.local.set({ previousSelections: updated });
+    }
   };
 
   const rootURL = 'https://penncoursereview.com/api/base/current/courses';
@@ -511,6 +526,22 @@ function App() {
                   >
                     <strong>{selection.id}</strong>: {selection.title}
                   </span>
+
+                  <textarea //adding a note
+                    placeholder="Add a note..."
+                    defaultValue={selection.note}
+                    onBlur={(e) => updateNote(selection.id, e.target.value, 'current')}
+                    style={{
+                      width: '100%',
+                      marginTop: '5px',
+                      fontSize: '12px',
+                      padding: '5px',
+                      borderRadius: '3px',
+                      border: '1px solid #ccc',
+                      resize: 'vertical'
+                    }}
+                  />
+
                   <button 
                     onClick={() => removeFromCurrentSelections(selection.id)}
                     style={{ 
@@ -583,6 +614,22 @@ function App() {
                   >
                     <strong>{selection.id}</strong>: {selection.title}
                   </span>
+
+                  <textarea
+                    placeholder="Add a note..."
+                    defaultValue={selection.note}
+                    onBlur={(e) => updateNote(selection.id, e.target.value, 'previous')}
+                    style={{
+                      width: '100%',
+                      marginTop: '5px',
+                      fontSize: '12px',
+                      padding: '5px',
+                      borderRadius: '3px',
+                      border: '1px solid #ccc',
+                      resize: 'vertical'
+                    }}
+                  />
+
                   <button 
                     onClick={() => removeFromPreviousSelections(selection.id)}
                     style={{ 
