@@ -39,6 +39,8 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 // LLM API call
 // This is the function that will be called when the user clicks the extension icon
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  console.log("🔔 background.onMessage got:", message);
+  if (message.action !== 'run_llm') return;
   if (message.action === 'getAiSelection') {
     // 1) fetch the API key
     chrome.storage.local.get(['openaiKey'], async ({ openaiKey }) => {
