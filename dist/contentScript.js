@@ -18,7 +18,7 @@ document.addEventListener('mouseup', function() {
   });
   
   // Create a floating notification element
-  function createSelectionNotification(courseId: string) {
+  function createSelectionNotification(courseId) {
     // Remove any existing notifications
     const existingNotification = document.getElementById('penn-course-selection-notification');
     if (existingNotification) {
