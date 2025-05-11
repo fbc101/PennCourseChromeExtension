@@ -81,9 +81,13 @@ function App() {
   const [isExpanded, setIsExpanded] = useState(false);
   const maxLength = 300; // desired maximum length
 
+  // New states for AI course selection
+  const [apiKey, setApiKey] = useState<string>('');
+  const [aiSelection, setAiSelection] = useState<string>('');
+
   useEffect(() => {
-    // Load search history and selections from chrome storage
-    chrome.storage.local.get(['searchHistory', 'previousSelections'], (result) => {
+    // Load search history and selections key from chrome storage
+    chrome.storage.local.get(['searchHistory', 'previousSelections', 'openaiKey'], (result) => {
       if (result.searchHistory) {
         setSearchHistory(result.searchHistory);
       }
@@ -91,8 +95,27 @@ function App() {
       if (result.previousSelections) {
         setPreviousSelections(result.previousSelections);
       }
+
+      if (result.openaiKey) {
+        setApiKey(result.openaiKey);
+      }
     });
   }, []);
+
+  // handler to save key
+  const saveKey = () => {
+    chrome.storage.local.set({ openaiKey: apiKey });
+  };
+
+  // call the background script for AI course selection
+  const askForSelection = () => {
+    chrome.runtime.sendMessage({
+      action: 'getAiSelection',
+      courses: currentSelections.map(c => ({ id: c.id, title: c.title }))
+    }, (response) => {
+      if (response?.answer) setAiSelection(response.answer);
+    });
+  };
 
   const clearSearchHistory = () => {
     chrome.storage.local.remove('searchHistory', () => {
@@ -858,6 +881,50 @@ function App() {
           }}>
           Clear All Selections
         </button>
+      </div>
+      
+      {/* -------- LLM Integration UI -------- */}
+      <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'space-between' }}>
+        <input
+          type="text"
+          value={apiKey}
+          onChange={(e) => setApiKey(e.target.value)}
+          placeholder="OpenAI API Key"
+          style={{
+            padding: '8px',
+            borderRadius: '5px',
+            border: '1px solid #ccc',
+            width: '70%',
+            fontSize: '14px'
+          }}
+        />
+        <button onClick={saveKey}
+          style={{
+            padding: '8px 16px',
+            backgroundColor: '#3875f6',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            fontSize: '14px'
+          }}>
+          Save Key
+        </button>
+
+        <hr/>
+        <button
+          disabled={!apiKey || currentSelections.length===0}
+          onClick={askForSelection}
+          style={{padding:'8px 16px', background:'#3875f6', color:'#fff', border:'none', borderRadius:4}}
+        >
+          🤖 Which course should I take?
+        </button>
+        {aiSelection && (
+          <div style={{marginTop: '12px', padding:'12px', background: '#f0f0f0', borderRadius:4}}>
+            <strong>Advice:</strong> <br/>
+            {aiSelection}
+          </div>
+        )}
       </div>
       
       <div style={{ textAlign: 'center', marginTop: '15px' }}>
