@@ -1,3 +1,5 @@
+console.log("🟢 background.js LOADED!");
+
 // cleans the highlighted text to retrieve the course_id, otherwise ignore the text
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   const selectedText = message.highlightedText;
@@ -37,10 +39,8 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
 
 // LLM API call
-// This is the function that will be called when the user clicks the extension icon
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log("🔔 background.onMessage got:", message);
-  if (message.action !== 'run_llm') return;
   if (message.action === 'getAiSelection') {
     // 1) fetch the API key
     chrome.storage.local.get(['openaiKey'], async ({ openaiKey }) => {
@@ -72,7 +72,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             Authorization: `Bearer ${openaiKey}`
           },
           body: JSON.stringify({
-            model: 'gpt-4',       // or whichever model you want
+            model: 'gpt-4',       // or whichever model 
             messages: [system, user],
             max_tokens: 200
           })

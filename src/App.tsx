@@ -117,13 +117,6 @@ function App() {
     });
   };
 
-  // TESTING if courses are sent to background
-  console.log("▶️ Sending courses to background:", currentSelections);
-  chrome.runtime.sendMessage({
-    action: 'run_llm',
-    courses: currentSelections.map(c => c.id)
-  });
-
   const clearSearchHistory = () => {
     chrome.storage.local.remove('searchHistory', () => {
       console.log('Search history cleared');
