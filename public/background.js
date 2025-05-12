@@ -68,7 +68,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       const user = {
         role: 'user',
         content: `Here are the courses I’m interested in: ${courseList} 
-        Based on their stats like workload, difficulty, and quality averages, which one would you recommend I take this coming semester? Explain briefly.`
+        Based on their stats like workload, difficulty, and quality averages, which one would you recommend I take this coming semester? 
+        You have to pick one course and one course only. Assume I am equally interested in all of them. I need to know which is best.
+        Explain briefly but limit your answer to 2-3 sentences and be consice and quantitative.`
       };
 
       // 3) call OpenAI
