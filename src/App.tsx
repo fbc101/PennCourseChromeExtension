@@ -82,9 +82,13 @@ function App() {
   const [isExpanded, setIsExpanded] = useState(false);
   const maxLength = 300; // desired maximum length
 
+  // New states for AI course selection
+  const [apiKey, setApiKey] = useState<string>('');
+  const [aiSelection, setAiSelection] = useState<string>('');
+
   useEffect(() => {
-    // Load search history and selections from chrome storage
-    chrome.storage.local.get(['searchHistory', 'previousSelections'], (result) => {
+    // Load search history and selections key from chrome storage
+    chrome.storage.local.get(['searchHistory', 'previousSelections', 'openaiKey'], (result) => {
       if (result.searchHistory) {
         setSearchHistory(result.searchHistory);
       }
@@ -92,8 +96,27 @@ function App() {
       if (result.previousSelections) {
         setPreviousSelections(result.previousSelections);
       }
+
+      if (result.openaiKey) {
+        setApiKey(result.openaiKey);
+      }
     });
   }, []);
+
+  // handler to save key
+  const saveKey = () => {
+    chrome.storage.local.set({ openaiKey: apiKey });
+  };
+
+  // call the background script for AI course selection
+  const askForSelection = () => {
+    chrome.runtime.sendMessage({
+      action: 'getAiSelection',
+      courses: currentSelections.filter(c => c.isChecked)
+    }, (response) => {
+      if (response?.answer) setAiSelection(response.answer);
+    });
+  };
 
   const clearSearchHistory = () => {
     chrome.storage.local.remove('searchHistory', () => {
@@ -906,6 +929,84 @@ function App() {
           Clear All Selections
         </button>
       </div>
+      
+      {/* LLM Integration UI */}
+      <hr style={{ width: '100%' }} />
+      <div
+        style={{
+          marginTop: '16px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '12px',          // space between rows
+          justifyContent: 'center',
+          width: '100%'
+        }}
+      >
+        {/* Row 1: key input + save */}
+        <div style={{ display: 'flex', width: '100%', gap: '8px' }}>
+          <input
+            type="text"
+            value={apiKey}
+            onChange={e => setApiKey(e.target.value)}
+            placeholder="OpenAI API Key"
+            style={{
+              flex: 1,
+              padding: '8px',
+              borderRadius: '5px',
+              border: '1px solid #ccc',
+              fontSize: '14px'
+            }}
+          />
+          <button
+            onClick={saveKey}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#3875f6',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer',
+              fontSize: '14px'
+            }}
+          >
+            Save Key
+          </button>
+        </div>
+
+        {/* Row 2: ask button */}
+        <button
+          disabled={!apiKey || currentSelections.length === 0}
+          onClick={askForSelection}
+          style={{
+            padding: '8px 16px',
+            backgroundColor: '#3875f6',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: apiKey && currentSelections.length ? 'pointer' : 'not-allowed',
+            fontSize: '14px'
+          }}
+        >
+          Ask ChatGPT: Which course should I take?
+        </button>
+
+        {/* Row 3: advice panel */}
+        {aiSelection && (
+          <div
+            style={{
+              width: '95%',
+              marginTop: '8px',
+              padding: '12px',
+              backgroundColor: '#f0f0f0',
+              borderRadius: '4px'
+            }}
+          >
+            <strong>Advice:</strong>
+            <p style={{ marginTop: '4px' }}>{aiSelection}</p>
+          </div>
+        )}
+      </div>
+
       
       <div style={{ textAlign: 'center', marginTop: '15px' }}>
         <a href="https://forms.gle/qDwm7njL9JDvoHyN8" target="_blank" rel="noopener noreferrer" style={{ fontSize: '14px' }}>
