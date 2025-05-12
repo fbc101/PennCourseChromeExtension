@@ -111,7 +111,7 @@ function App() {
   const askForSelection = () => {
     chrome.runtime.sendMessage({
       action: 'getAiSelection',
-      courses: currentSelections.map(c => ({ id: c.id, title: c.title }))
+      courses: currentSelections
     }, (response) => {
       if (response?.answer) setAiSelection(response.answer);
     });

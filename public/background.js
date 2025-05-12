@@ -1,5 +1,3 @@
-console.log("🟢 background.js LOADED!");
-
 // cleans the highlighted text to retrieve the course_id, otherwise ignore the text
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   const selectedText = message.highlightedText;
@@ -42,17 +40,27 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log("🔔 background.onMessage got:", message);
   if (message.action === 'getAiSelection') {
-    // 1) fetch the API key
+    // fetch the API key
     chrome.storage.local.get(['openaiKey'], async ({ openaiKey }) => {
       if (!openaiKey) {
         sendResponse({ error: 'No OpenAI key saved' });
         return;
       }
 
-      // 2) build your prompt from the courses array
+      // build prompt from the courses objects
       const courseList = message.courses
-        .map(c => `• ${c.id}: ${c.title}`)
-        .join('\n');
+        .map(c => {
+          const d = c.courseData;
+          return [
+            `• ${c.id}: ${c.title}`,
+            `    Course Quality: ${d.course_quality}`,
+            `    Instructor Quality: ${d.instructor_quality}`,
+            `    Difficulty: ${d.difficulty}`,
+            `    Work Required: ${d.work_required}`
+          ].join('\n');
+        })
+        .join('\n\n');
+
       const system = {
         role: 'system',
         content: 'You are a helpful academic advisor for Penn undergrads.'
@@ -60,30 +68,45 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       const user = {
         role: 'user',
         content: `Here are the courses I’m interested in: ${courseList} 
-        Based on workload, difficulty, and quality averages, which one would you recommend I take this coming semester? Explain briefly.`.trim()
+        Based on their stats like workload, difficulty, and quality averages, which one would you recommend I take this coming semester? Explain briefly.`
       };
 
       // 3) call OpenAI
       try {
         const res = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
+          credentials: 'omit',
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${openaiKey}`
           },
           body: JSON.stringify({
-            model: 'gpt-4',       // or whichever model 
-            messages: [system, user],
+            model: 'gpt-4o',   
+            messages: [
+              {role: "system", content: system.content},
+              {role: "user", content: user.content}
+            ],
             max_tokens: 200
           })
         });
+
+        // Log the whole API response to troubleshoot the format
+        console.log('API Response: ', res);
+
+
         const data = await res.json();
-        const answer = data.choices?.[0]?.message?.content || 'No response';
+        console.log("🗂 full OpenAI JSON", data);
+
+        const answer = data.choices[0]?.message?.content || 'No response';
         sendResponse({ answer });
-      } catch (err) {
+
+      }
+        catch (err) {
         console.error(err);
         sendResponse({ answer: 'Error calling OpenAI.' });
       }
+      
+
     });
 
     // return true to indicate we’ll call sendResponse asynchronously
