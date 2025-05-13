@@ -97,6 +97,9 @@ function App() {
   const [singleCourseAnalysis, setSingleCourseAnalysis] = useState<string>('');
   const [multiCourseRecommendation, setMultiCourseRecommendation] = useState<string>('');
 
+  // New states for AI course summary
+  // const [aiSummary, setAiSummary] = useState<string>('');
+
   useEffect(() => {
     // Load search history and selections key from chrome storage
     chrome.storage.local.get(['searchHistory', 'previousSelections', 'openaiKey'], (result) => {
@@ -119,11 +122,21 @@ function App() {
     chrome.storage.local.set({ openaiKey: apiKey });
   };
 
-  // Original function - kept for backward compatibility during development
+  // Quick course recommendation (original functionality)
   const askForSelection = () => {
+    // Get checked courses from both sections
+    const checkedCourses = currentSelections.filter(c => c.isChecked).concat(previousSelections.filter(c => c.isChecked));
+    
+    // Validate that at least one course is selected
+    if (checkedCourses.length === 0) {
+      setAiSelection("Please select at least one course to get a recommendation.");
+      return;
+    }
+    
+    // Send the courses to GPT
     chrome.runtime.sendMessage({
       action: 'getAiSelection',
-      courses: currentSelections.filter(c => c.isChecked)
+      courses: checkedCourses
     }, (response) => {
       if (response?.answer) setAiSelection(response.answer);
     });
@@ -168,6 +181,29 @@ function App() {
       if (response?.answer) setMultiCourseRecommendation(response.answer);
     });
   };
+
+  // Commented out for potential future use
+  /*
+  const askForSummary = () => {
+    const checkedCourses = currentSelections.filter(c => c.isChecked).concat(previousSelections.filter(c => c.isChecked))
+  
+    if (checkedCourses.length === 0) return; 
+
+    const toSend = checkedCourses.map(c => ({
+      id: c.id,
+      title: c.title,
+      description: c.courseData?.description || ''
+    }));
+
+    chrome.runtime.sendMessage({
+      action: 'getCourseOutcomes',
+      courses: toSend
+    }, response => {
+      if (response?.outcomes) setAiSummary(response.outcomes);
+      else setAiSummary('No summary returned.');
+    });
+  };
+  */
 
   const clearSearchHistory = () => {
     chrome.storage.local.remove('searchHistory', () => {
@@ -1130,8 +1166,47 @@ function App() {
 
         {/* Row 2: GPT buttons */}
         <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {/* Single Course Analysis Button */}
+          {/* Quick Recommendation Button (Original) */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+            <button
+              disabled={!apiKey}
+              onClick={askForSelection}
+              style={{
+                padding: '8px 16px',
+                width: '100%',
+                backgroundColor: '#3875f6',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: apiKey ? 'pointer' : 'not-allowed',
+                fontSize: '14px'
+              }}
+            >
+              Ask ChatGPT: Which course should I take?
+            </button>
+            <p style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
+              Select courses from either section for a quick, concise recommendation.
+            </p>
+            
+            {/* Quick Recommendation Response Panel */}
+            {aiSelection && (
+              <div
+                style={{
+                  width: '95%',
+                  marginTop: '8px',
+                  padding: '12px',
+                  backgroundColor: '#f0f0f0',
+                  borderRadius: '4px'
+                }}
+              >
+                <strong>Quick Recommendation:</strong>
+                <p style={{ marginTop: '4px' }}>{aiSelection}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Single Course Analysis Button */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', marginTop: '8px' }}>
             <button
               disabled={!apiKey}
               onClick={askForCourseSummary}
@@ -1195,7 +1270,7 @@ function App() {
               Ask ChatGPT: Compare Courses
             </button>
             <p style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
-              Select 2 or more courses from Previously Selected to get a recommendation.
+              Select 2 or more courses from Previously Selected for a detailed comparison.
             </p>
 
             {/* Multi-Course Response Panel */}
@@ -1209,7 +1284,7 @@ function App() {
                   borderRadius: '4px'
                 }}
               >
-                <strong>Course Recommendation:</strong>
+                <strong>Detailed Comparison:</strong>
                 <div 
                   style={{ marginTop: '4px' }}
                   dangerouslySetInnerHTML={{ 
@@ -1223,23 +1298,6 @@ function App() {
             )}
           </div>
         </div>
-        
-        {/* Original advice panel - kept for backward compatibility */}
-        {aiSelection && (
-          <div
-            style={{
-              width: '95%',
-              marginTop: '16px',
-              padding: '12px',
-              backgroundColor: '#f0f0f0',
-              borderRadius: '4px',
-              display: 'none' // Hide it but keep it in the DOM for compatibility
-            }}
-          >
-            <strong>Advice:</strong>
-            <p style={{ marginTop: '4px' }}>{aiSelection}</p>
-          </div>
-        )}
       </div>
 
       
