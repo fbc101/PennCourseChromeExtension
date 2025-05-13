@@ -875,6 +875,21 @@ function App() {
           ))}
         </Bar>
       </BarChart>
+      <div //prereqs section
+        style={{
+          marginTop: 10,
+          marginBottom: 10,
+          fontSize: '14px',
+          color: '#444',
+          lineHeight: 1.4
+        }}
+      >
+        <strong style={{ fontWeight: 600 }}>Prerequisites:</strong>{' '}
+        {courseResult.prerequisites && courseResult.prerequisites.toLowerCase() !== 'none'
+        ? courseResult.prerequisites
+        : 'Check course description'}
+
+      </div>
       <div>
         {isExpanded || courseResult.description.length <= maxLength
           ? courseResult.description
