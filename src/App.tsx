@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import axios from 'axios';
 import { AutoComplete, Input, Checkbox } from 'antd';
+// @ts-ignore
 import pennCourseSearchImage from './assets/pennCourseSearch.png';
+// @ts-ignore
 import copy from './assets/copy.png';
 import {
   BarChart,
@@ -158,7 +160,7 @@ function App() {
     return response.data;
   }
 
-  const parseData = async (data, changed: boolean) => {
+  const parseData = async (data: any, changed: boolean) => {
     if (data.sections) { // to avoid no flatMap error
       // Parse instructor names from sections
       let instructors = data.sections.flatMap((section: Section) =>
@@ -176,19 +178,19 @@ function App() {
           work_required: section.work_required ?? 0
         })));
 
-      // filter out the nulls, only keep the ones where the instructors stats are not null
-      professorsStats = professorsStats.filter((section: Section) => section.instructors !== null);
+      // filter out the nulls, only keep the ones where the id is not null
+      professorsStats = professorsStats.filter((prof: any) => prof.id !== null);
 
       // for repeated instructors, group them
-      const groupedInstructors = professorsStats.reduce((acc, curr) => {
+      const groupedInstructors = professorsStats.reduce((acc: any, curr: any) => {
         acc[curr.id] = acc[curr.id] || [];
         acc[curr.id].push(curr);
         return acc;
       }, {});
 
       // for the repeated instructors, keep the statistics with highest instructor_quality
-      const filteredInstructors = Object.values(groupedInstructors).map(instructors => {
-        return instructors.reduce((max, curr) => max.instructor_quality > curr.instructor_quality ? max : curr);
+      const filteredInstructors = Object.values(groupedInstructors as Record<string, any[]>).map((instructors: any[]) => {
+        return instructors.reduce((max: any, curr: any) => max.instructor_quality > curr.instructor_quality ? max : curr);
       });
 
       // Check if description contains "<b>" or "<p>" and remove that and all text after it
