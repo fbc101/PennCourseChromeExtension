@@ -95,6 +95,9 @@ function App() {
   const [apiKey, setApiKey] = useState<string>('');
   const [aiSelection, setAiSelection] = useState<string>('');
 
+  // New states for AI course summary
+  // const [aiSummary, setAiSummary] = useState<string>('');
+
   useEffect(() => {
     // Load search history and selections key from chrome storage
     chrome.storage.local.get(['searchHistory', 'previousSelections', 'openaiKey'], (result) => {
@@ -121,11 +124,35 @@ function App() {
   const askForSelection = () => {
     chrome.runtime.sendMessage({
       action: 'getAiSelection',
-      courses: currentSelections.filter(c => c.isChecked)
+      courses: currentSelections.filter(c => c.isChecked).concat(previousSelections.filter(c => c.isChecked))
     }, (response) => {
       if (response?.answer) setAiSelection(response.answer);
     });
   };
+
+  // call the background script for AI course summary
+  {/*
+  const askForSummary = () => {
+    const checkedCourses = currentSelections.filter(c => c.isChecked).concat(previousSelections.filter(c => c.isChecked))
+  
+    if (checkedCourses.length === 0) return; 
+
+    const toSend = checkedCourses.map(c => ({
+      id: c.id,
+      title: c.title,
+      description: c.courseData?.description || ''
+    }));
+
+    chrome.runtime.sendMessage({
+      action: 'getCourseOutcomes',
+      courses: toSend
+    }, response => {
+      if (response?.outcomes) setAiSummary(response.outcomes);
+      else setAiSummary('No summary returned.');
+    });
+  };
+  */}
+
 
   const clearSearchHistory = () => {
     chrome.storage.local.remove('searchHistory', () => {
@@ -1088,7 +1115,10 @@ function App() {
 
         {/* Row 2: ask button */}
         <button
-          disabled={!apiKey || currentSelections.length === 0}
+          disabled={!apiKey || 
+            (currentSelections.filter(c=>c.isChecked).concat(previousSelections).filter(c=>c.isChecked)
+            .length === 0)
+          }
           onClick={askForSelection}
           style={{
             padding: '8px 16px',
@@ -1102,6 +1132,34 @@ function App() {
         >
           Ask ChatGPT: Which course should I take?
         </button>
+
+
+        {/* Ask for course summary button 
+        <button
+            disabled={!apiKey || 
+              (currentSelections.filter(c=>c.isChecked).concat(previousSelections).filter(c=>c.isChecked)
+               .length === 0)
+            }
+          onClick={askForSummary}
+          style={{
+            padding: '8px 16px',
+            backgroundColor: '#3875f6',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: apiKey && currentSelections.length ? 'pointer' : 'not-allowed',
+            fontSize: '14px'
+          }}>
+          Ask ChatGPT: What will I learn in each course?
+        </button>
+
+        {aiSummary && (
+          <div style={{marginTop:12,padding:12,background:'#f0f0f0',borderRadius:4,whiteSpace:'pre-wrap'}}>
+            {aiSummary}
+          </div>
+        )}
+        */}
+
 
         {/* Row 3: advice panel */}
         {aiSelection && (

@@ -36,7 +36,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 });
 
 
-// LLM API call
+// LLM API call (for course recommendation)
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log("🔔 background.onMessage got:", message);
   if (message.action === 'getAiSelection') {
@@ -115,3 +115,54 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
 });
+
+// LLM API call (for course summaries)
+{/*}
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action !== 'getCourseOutcomes') return;
+  chrome.storage.local.get(['openaiKey'], async ({ openaiKey }) => {
+    if (!openaiKey) {
+      sendResponse({ outcomes: 'No API key.' });
+      return;
+    }
+
+    // build the bullet‑list of courses + desc
+    const courseList = message.courses
+      .map(c => `• ${c.id} – ${c.title}\n  ${c.description}`)
+      .join('\n\n');
+
+    const system = {
+      role: 'system',
+      content: 'You are an academic advisor.  For each course, produce 1 to 2 bullet points only describing what students (in second POV "you) will learn and skills gained. Focus on how the courses uniquely differ.'
+    };
+    const user = {
+      role: 'user',
+      content: `Here are the selected courses:\n\n${courseList}`
+    };
+
+    try {
+      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'Authorization':`Bearer ${openaiKey}`
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o',
+          messages: [system, user],
+          max_tokens: 300
+        })
+      });
+      const data = await res.json();
+      const out = data.choices?.[0]?.message?.content?.trim() 
+        || 'No summary returned.';
+      sendResponse({ outcomes: out });
+    } catch (e) {
+      console.error(e);
+      sendResponse({ outcomes: 'Error during OpenAI call.' });
+    }
+  });
+  return true; // keep sendResponse alive
+});
+*/}
+
