@@ -94,6 +94,8 @@ function App() {
   // New states for AI course selection
   const [apiKey, setApiKey] = useState<string>('');
   const [aiSelection, setAiSelection] = useState<string>('');
+  const [singleCourseAnalysis, setSingleCourseAnalysis] = useState<string>('');
+  const [multiCourseRecommendation, setMultiCourseRecommendation] = useState<string>('');
 
   useEffect(() => {
     // Load search history and selections key from chrome storage
@@ -117,13 +119,53 @@ function App() {
     chrome.storage.local.set({ openaiKey: apiKey });
   };
 
-  // call the background script for AI course selection
+  // Original function - kept for backward compatibility during development
   const askForSelection = () => {
     chrome.runtime.sendMessage({
       action: 'getAiSelection',
       courses: currentSelections.filter(c => c.isChecked)
     }, (response) => {
       if (response?.answer) setAiSelection(response.answer);
+    });
+  };
+
+  // Get a single course summary from GPT
+  const askForCourseSummary = () => {
+    // Get checked courses from current selections only
+    const checkedCurrent = currentSelections.filter(c => c.isChecked);
+    
+    // Validate that exactly one course is selected
+    if (checkedCurrent.length !== 1) {
+      setSingleCourseAnalysis("Please select exactly one course from Currently Selected section.");
+      return;
+    }
+    
+    // Send the course to GPT
+    chrome.runtime.sendMessage({
+      action: 'getCourseSummary',
+      course: checkedCurrent[0]
+    }, (response) => {
+      if (response?.answer) setSingleCourseAnalysis(response.answer);
+    });
+  };
+
+  // Compare multiple courses and get a recommendation
+  const askForCourseRecommendation = () => {
+    // Get checked courses from previous selections only
+    const checkedPrevious = previousSelections.filter(c => c.isChecked);
+    
+    // Validate that at least two courses are selected
+    if (checkedPrevious.length < 2) {
+      setMultiCourseRecommendation("Please select at least two courses from Previously Selected section.");
+      return;
+    }
+    
+    // Send the courses to GPT
+    chrome.runtime.sendMessage({
+      action: 'getCourseRecommendation',
+      courses: checkedPrevious
+    }, (response) => {
+      if (response?.answer) setMultiCourseRecommendation(response.answer);
     });
   };
 
@@ -1086,32 +1128,112 @@ function App() {
           </button>
         </div>
 
-        {/* Row 2: ask button */}
-        <button
-          disabled={!apiKey || currentSelections.length === 0}
-          onClick={askForSelection}
-          style={{
-            padding: '8px 16px',
-            backgroundColor: '#3875f6',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: apiKey && currentSelections.length ? 'pointer' : 'not-allowed',
-            fontSize: '14px'
-          }}
-        >
-          Ask ChatGPT: Which course should I take?
-        </button>
+        {/* Row 2: GPT buttons */}
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          {/* Single Course Analysis Button */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+            <button
+              disabled={!apiKey}
+              onClick={askForCourseSummary}
+              style={{
+                padding: '8px 16px',
+                width: '100%',
+                backgroundColor: '#3875f6',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: apiKey ? 'pointer' : 'not-allowed',
+                fontSize: '14px'
+              }}
+            >
+              Ask ChatGPT: Summarize Course
+            </button>
+            <p style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
+              Select exactly one course from Currently Selected section to generate a summary.
+            </p>
+            
+            {/* Single Course Response Panel */}
+            {singleCourseAnalysis && (
+              <div
+                style={{
+                  width: '95%',
+                  marginTop: '8px',
+                  padding: '12px',
+                  backgroundColor: '#f0f0f0',
+                  borderRadius: '4px'
+                }}
+              >
+                <strong>Course Summary:</strong>
+                <div 
+                  style={{ marginTop: '4px' }}
+                  dangerouslySetInnerHTML={{ 
+                    __html: singleCourseAnalysis
+                      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                      .replace(/- (.*?)$/gm, '<div style="margin-left:10px;margin-bottom:8px;">• $1</div>')
+                  }}
+                />
+              </div>
+            )}
+          </div>
 
-        {/* Row 3: advice panel */}
+          {/* Multi-Course Comparison Button */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', marginTop: '8px' }}>
+            <button
+              disabled={!apiKey}
+              onClick={askForCourseRecommendation}
+              style={{
+                padding: '8px 16px',
+                width: '100%',
+                backgroundColor: '#3875f6',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: apiKey ? 'pointer' : 'not-allowed',
+                fontSize: '14px'
+              }}
+            >
+              Ask ChatGPT: Compare Courses
+            </button>
+            <p style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
+              Select 2 or more courses from Previously Selected to get a recommendation.
+            </p>
+
+            {/* Multi-Course Response Panel */}
+            {multiCourseRecommendation && (
+              <div
+                style={{
+                  width: '95%',
+                  marginTop: '8px',
+                  padding: '12px',
+                  backgroundColor: '#f0f0f0',
+                  borderRadius: '4px'
+                }}
+              >
+                <strong>Course Recommendation:</strong>
+                <div 
+                  style={{ marginTop: '4px' }}
+                  dangerouslySetInnerHTML={{ 
+                    __html: multiCourseRecommendation
+                      .replace(/### (.*?)$/gm, '<h4 style="margin-top:12px;margin-bottom:6px;font-size:15px">$1</h4>')
+                      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                      .replace(/- (.*?)$/gm, '<div style="margin-left:10px;margin-bottom:6px;">• $1</div>')
+                  }}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+        
+        {/* Original advice panel - kept for backward compatibility */}
         {aiSelection && (
           <div
             style={{
               width: '95%',
-              marginTop: '8px',
+              marginTop: '16px',
               padding: '12px',
               backgroundColor: '#f0f0f0',
-              borderRadius: '4px'
+              borderRadius: '4px',
+              display: 'none' // Hide it but keep it in the DOM for compatibility
             }}
           >
             <strong>Advice:</strong>
