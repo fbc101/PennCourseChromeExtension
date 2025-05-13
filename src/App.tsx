@@ -13,6 +13,13 @@ import {
   YAxis,
   Cell,
   LabelList,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  Radar,
+  Legend,
+  ResponsiveContainer,
 } from "recharts";
 
 interface Instructor {
@@ -684,12 +691,73 @@ function App() {
       ...previousSelections.filter(c => c.isChecked)
     ];
     
+    // Add state for toggling between table and radar views
+    const [viewMode, setViewMode] = useState<'table' | 'radar'>('table');
+    
+    // Format data for radar chart
+    const formatRadarData = () => {
+      // Create the base data structure with the four metrics
+      const metrics = [
+        { subject: 'Course Quality', fullMark: 4 },
+        { subject: 'Instructor Quality', fullMark: 4 },
+        { subject: 'Difficulty', fullMark: 4 },
+        { subject: 'Work Required', fullMark: 4 }
+      ];
+      
+      // Transform the data for radar chart format
+      return metrics.map(metric => {
+        // Start with the base metric
+        const dataPoint: any = { ...metric };
+        
+        // Add each course's value for this metric
+        checkedCourses.forEach(course => {
+          if (course.courseData) {
+            switch(metric.subject) {
+              case 'Course Quality':
+                dataPoint[course.id] = course.courseData.course_quality || 0;
+                break;
+              case 'Instructor Quality':
+                dataPoint[course.id] = course.courseData.instructor_quality || 0;
+                break;
+              case 'Difficulty':
+                dataPoint[course.id] = course.courseData.difficulty || 0;
+                break;
+              case 'Work Required':
+                dataPoint[course.id] = course.courseData.work_required || 0;
+                break;
+            }
+          }
+        });
+        
+        return dataPoint;
+      });
+    };
+    
     return (
       <div style={{ marginTop: '15px' }}>
-        <h4>Course Comparison</h4>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h4>Course Comparison</h4>
+          {checkedCourses.length >= 2 && (
+            <button 
+              onClick={() => setViewMode(viewMode === 'table' ? 'radar' : 'table')}
+              style={{
+                padding: '4px 8px',
+                backgroundColor: '#3875f6',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '3px',
+                cursor: 'pointer',
+                fontSize: '12px'
+              }}
+            >
+              Switch to {viewMode === 'table' ? 'Radar View' : 'Table View'}
+            </button>
+          )}
+        </div>
+        
         {checkedCourses.length < 2 ? (
           <p style={{ color: 'gray', fontSize: '12px' }}>Select at least 2 courses to compare</p>
-        ) : (
+        ) : viewMode === 'table' ? (
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
@@ -747,6 +815,34 @@ function App() {
                 ))}
               </tbody>
             </table>
+          </div>
+        ) : (
+          <div style={{ height: 300, marginTop: 10 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <RadarChart outerRadius="80%" data={formatRadarData()}>
+                <PolarGrid />
+                <PolarAngleAxis dataKey="subject" />
+                <PolarRadiusAxis angle={30} domain={[0, 4]} />
+                
+                {checkedCourses.map((course, index) => {
+                  // Generate a unique color for each course
+                  const colors = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#a4de6c'];
+                  const color = colors[index % colors.length];
+                  
+                  return (
+                    <Radar
+                      key={course.id}
+                      name={course.id}
+                      dataKey={course.id}
+                      stroke={color}
+                      fill={color}
+                      fillOpacity={0.6}
+                    />
+                  );
+                })}
+                <Legend />
+              </RadarChart>
+            </ResponsiveContainer>
           </div>
         )}
       </div>
